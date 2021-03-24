@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4}, "markdown");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -653,4 +653,4 @@
      "[comment ```]",
      "foo",
      "[comment ```]");
-})();
+}))();

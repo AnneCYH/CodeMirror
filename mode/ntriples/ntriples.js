@@ -25,7 +25,7 @@
              -> ERROR
          }
 */
-CodeMirror.defineMode("ntriples", function() {
+CodeMirror.defineMode("ntriples", () => {
 
   var Location = {
     PRE_SUBJECT         : 0,
@@ -88,22 +88,20 @@ CodeMirror.defineMode("ntriples", function() {
   }
 
   return {
-    startState: function() {
-       return {
-           location : Location.PRE_SUBJECT,
-           uris     : [],
-           anchors  : [],
-           bnodes   : [],
-           langs    : [],
-           types    : []
-       };
-    },
-    token: function(stream, state) {
+    startState: () => ({
+        location : Location.PRE_SUBJECT,
+        uris     : [],
+        anchors  : [],
+        bnodes   : [],
+        langs    : [],
+        types    : []
+    }),
+    token: (stream, state) => {
       var ch = stream.next();
       if(ch == '<') {
          transitState(state, ch);
          var parsedURI = '';
-         stream.eatWhile( function(c) { if( c != '#' && c != '>' ) { parsedURI += c; return true; } return false;} );
+         stream.eatWhile( c => { if( c != '#' && c != '>' ) { parsedURI += c; return true; } return false;} );
          state.uris.push(parsedURI);
          if( stream.match('#', false) ) return 'variable';
          stream.next();
@@ -112,7 +110,7 @@ CodeMirror.defineMode("ntriples", function() {
       }
       if(ch == '#') {
         var parsedAnchor = '';
-        stream.eatWhile(function(c) { if(c != '>' && c != ' ') { parsedAnchor+= c; return true; } return false;});
+        stream.eatWhile(c => { if(c != '>' && c != ' ') { parsedAnchor+= c; return true; } return false;});
         state.anchors.push(parsedAnchor);
         return 'variable-2';
       }
@@ -123,7 +121,7 @@ CodeMirror.defineMode("ntriples", function() {
       if(ch == '_') {
           transitState(state, ch);
           var parsedBNode = '';
-          stream.eatWhile(function(c) { if( c != ' ' ) { parsedBNode += c; return true; } return false;});
+          stream.eatWhile(c => { if( c != ' ' ) { parsedBNode += c; return true; } return false;});
           state.bnodes.push(parsedBNode);
           stream.next();
           transitState(state, ' ');
@@ -131,7 +129,7 @@ CodeMirror.defineMode("ntriples", function() {
       }
       if(ch == '"') {
           transitState(state, ch);
-          stream.eatWhile( function(c) { return c != '"'; } );
+          stream.eatWhile( c => c != '"' );
           stream.next();
           if( stream.peek() != '@' && stream.peek() != '^' ) {
               transitState(state, '"');
@@ -141,7 +139,7 @@ CodeMirror.defineMode("ntriples", function() {
       if( ch == '@' ) {
           transitState(state, '@');
           var parsedLang = '';
-          stream.eatWhile(function(c) { if( c != ' ' ) { parsedLang += c; return true; } return false;});
+          stream.eatWhile(c => { if( c != ' ' ) { parsedLang += c; return true; } return false;});
           state.langs.push(parsedLang);
           stream.next();
           transitState(state, ' ');
@@ -151,7 +149,7 @@ CodeMirror.defineMode("ntriples", function() {
           stream.next();
           transitState(state, '^');
           var parsedType = '';
-          stream.eatWhile(function(c) { if( c != '>' ) { parsedType += c; return true; } return false;} );
+          stream.eatWhile(c => { if( c != '>' ) { parsedType += c; return true; } return false;} );
           state.types.push(parsedType);
           stream.next();
           transitState(state, '>');

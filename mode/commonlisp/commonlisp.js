@@ -1,4 +1,4 @@
-CodeMirror.defineMode("commonlisp", function (config) {
+CodeMirror.defineMode("commonlisp", config => {
   var assumeBody = /^with|^def|^do|^prog|case$|^cond$|bind$|when$|unless$/;
   var numLiteral = /^(?:[+\-]?(?:\d+|\d*\.\d+)(?:[efd][+\-]?\d+)?|[+\-]?\d+(?:\/[+\-]?\d+)?|#b[+\-]?[01]+|#o[+\-]?[0-7]+|#x[+\-]?[\da-f]+)/;
   var symbol = /[^\s'`,@()\[\]";]/;
@@ -66,11 +66,12 @@ CodeMirror.defineMode("commonlisp", function (config) {
   }
 
   return {
-    startState: function () {
-      return {ctx: {prev: null, start: 0, indentTo: 0}, tokenize: base};
-    },
+    startState: () => ({
+      ctx: {prev: null, start: 0, indentTo: 0},
+      tokenize: base
+    }),
 
-    token: function (stream, state) {
+    token: (stream, state) => {
       if (stream.sol() && typeof state.ctx.indentTo != "number")
         state.ctx.indentTo = state.ctx.start + 1;
 
@@ -91,7 +92,7 @@ CodeMirror.defineMode("commonlisp", function (config) {
       return style;
     },
 
-    indent: function (state, _textAfter) {
+    indent: (state, _textAfter) => {
       var i = state.ctx.indentTo;
       return typeof i == "number" ? i : state.ctx.start + 1;
     },

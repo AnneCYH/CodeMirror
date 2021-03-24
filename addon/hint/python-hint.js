@@ -1,4 +1,4 @@
-(function () {
+((() => {
   function forEach(arr, f) {
     for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
   }
@@ -42,7 +42,7 @@
   }
 
   function pythonHint(editor) {
-    return scriptHint(editor, pythonKeywordsU, function (e, cur) {return e.getTokenAt(cur);});
+    return scriptHint(editor, pythonKeywordsU, (e, cur) => e.getTokenAt(cur));
   }
   CodeMirror.pythonHint = pythonHint; // deprecated
   CodeMirror.registerHelper("hint", "python", pythonHint);
@@ -92,4 +92,4 @@
     }
     return found;
   }
-})();
+}))();

@@ -1,4 +1,4 @@
-(function(){
+((() => {
   var Pos = CodeMirror.Pos;
 
   function SearchCursor(doc, query, pos, caseFold) {
@@ -14,7 +14,7 @@
     // more matches were found.
     if (typeof query != "string") { // Regexp match
       if (!query.global) query = new RegExp(query.source, query.ignoreCase ? "ig" : "g");
-      this.matches = function(reverse, pos) {
+      this.matches = (reverse, pos) => {
         if (reverse) {
           query.lastIndex = 0;
           var line = doc.getLine(pos.line).slice(0, pos.ch), cutOff = 0, match, start;
@@ -48,16 +48,16 @@
       };
     } else { // String query
       if (caseFold) query = query.toLowerCase();
-      var fold = caseFold ? function(str){return str.toLowerCase();} : function(str){return str;};
+      var fold = caseFold ? str => str.toLowerCase() : str => str;
       var target = query.split("\n");
       // Different methods for single-line and multi-line queries
       if (target.length == 1) {
         if (!query.length) {
           // Empty string would match anything and never progress, so
           // we define it to match nothing instead.
-          this.matches = function() {};
+          this.matches = () => {};
         } else {
-          this.matches = function(reverse, pos) {
+          this.matches = (reverse, pos) => {
             var line = fold(doc.getLine(pos.line)), len = query.length, match;
             if (reverse ? (pos.ch >= len && (match = line.lastIndexOf(query, pos.ch - len)) != -1)
                         : (match = line.indexOf(query, pos.ch)) != -1)
@@ -66,7 +66,7 @@
           };
         }
       } else {
-        this.matches = function(reverse, pos) {
+        this.matches = (reverse, pos) => {
           var ln = pos.line, idx = (reverse ? target.length - 1 : 0), match = target[idx], line = fold(doc.getLine(ln));
           var offsetA = (reverse ? line.indexOf(match) + match.length : line.lastIndexOf(match));
           if (reverse ? offsetA > pos.ch || offsetA != match.length
@@ -140,4 +140,4 @@
   CodeMirror.defineDocExtension("getSearchCursor", function(query, pos, caseFold) {
     return new SearchCursor(this, query, pos, caseFold);
   });
-})();
+}))();

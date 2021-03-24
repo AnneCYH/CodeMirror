@@ -1,8 +1,8 @@
 // Depends on jsonlint.js from https://github.com/zaach/jsonlint
 
-CodeMirror.registerHelper("lint", "json", function(text) {
+CodeMirror.registerHelper("lint", "json", text => {
   var found = [];
-  jsonlint.parseError = function(str, hash) {
+  jsonlint.parseError = (str, hash) => {
     var loc = hash.loc;
     found.push({from: CodeMirror.Pos(loc.first_line - 1, loc.first_column),
                 to: CodeMirror.Pos(loc.last_line - 1, loc.last_column),

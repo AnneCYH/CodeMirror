@@ -1,4 +1,4 @@
-CodeMirror.defineMode("fortran", function() {
+CodeMirror.defineMode("fortran", () => {
   function words(array) {
     var keys = {};
     for (var i = 0; i < array.length; ++i) {
@@ -140,7 +140,7 @@ CodeMirror.defineMode("fortran", function() {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, next, end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {
@@ -157,11 +157,11 @@ CodeMirror.defineMode("fortran", function() {
   // Interface
 
   return {
-    startState: function() {
-      return {tokenize: null};
-    },
+    startState: () => ({
+      tokenize: null
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       var style = (state.tokenize || tokenBase)(stream, state);
       if (style == "comment" || style == "meta") return style;

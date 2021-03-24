@@ -1,6 +1,6 @@
 //mIRC mode by Ford_Lawnmower :: Based on Velocity mode by Steve O'Hara
 CodeMirror.defineMIME("text/mirc", "mirc");
-CodeMirror.defineMode("mirc", function() {
+CodeMirror.defineMode("mirc", () => {
   function parseWords(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -162,14 +162,12 @@ CodeMirror.defineMode("mirc", function() {
     return "meta";
   }
   return {
-    startState: function() {
-      return {
-        tokenize: tokenBase,
-        beforeParams: false,
-        inParams: false
-      };
-    },
-    token: function(stream, state) {
+    startState: () => ({
+      tokenize: tokenBase,
+      beforeParams: false,
+      inParams: false
+    }),
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     }

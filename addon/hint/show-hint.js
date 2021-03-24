@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.showHint = function(cm, getHints, options) {
+  CodeMirror.showHint = (cm, getHints, options) => {
     // We want a single cursor position.
     if (cm.somethingSelected()) return;
     if (getHints == null) getHints = cm.getHelper(cm.getCursor(), "hint");
@@ -12,7 +12,7 @@
     var completion = cm.state.completionActive = new Completion(cm, getHints, options || {});
     CodeMirror.signal(cm, "startCompletion", cm);
     if (completion.options.async)
-      getHints(cm, function(hints) { completion.showHints(hints); }, completion.options);
+      getHints(cm, hints => { completion.showHints(hints); }, completion.options);
     else
       return completion.showHints(getHints(cm, completion.options));
   };
@@ -109,12 +109,12 @@
 
   function buildKeyMap(options, handle) {
     var baseMap = {
-      Up: function() {handle.moveFocus(-1);},
-      Down: function() {handle.moveFocus(1);},
-      PageUp: function() {handle.moveFocus(-handle.menuSize() + 1, true);},
-      PageDown: function() {handle.moveFocus(handle.menuSize() - 1, true);},
-      Home: function() {handle.setFocus(0);},
-      End: function() {handle.setFocus(handle.length - 1);},
+      Up: () => {handle.moveFocus(-1);},
+      Down: () => {handle.moveFocus(1);},
+      PageUp: () => {handle.moveFocus(-handle.menuSize() + 1, true);},
+      PageDown: () => {handle.moveFocus(handle.menuSize() - 1, true);},
+      Home: () => {handle.setFocus(0);},
+      End: () => {handle.setFocus(handle.length - 1);},
       Enter: handle.pick,
       Tab: handle.pick,
       Esc: handle.close
@@ -123,7 +123,7 @@
     function addBinding(key, val) {
       var bound;
       if (typeof val != "string")
-        bound = function(cm) { return val(cm, handle); };
+        bound = cm => val(cm, handle);
       // This mechanism is deprecated
       else if (baseMap.hasOwnProperty(val))
         bound = baseMap[val];
@@ -190,22 +190,22 @@
     }
 
     cm.addKeyMap(this.keyMap = buildKeyMap(options, {
-      moveFocus: function(n, avoidWrap) { widget.changeActive(widget.selectedHint + n, avoidWrap); },
-      setFocus: function(n) { widget.changeActive(n); },
-      menuSize: function() { return widget.screenAmount(); },
+      moveFocus: (n, avoidWrap) => { widget.changeActive(widget.selectedHint + n, avoidWrap); },
+      setFocus: n => { widget.changeActive(n); },
+      menuSize: () => widget.screenAmount(),
       length: completions.length,
-      close: function() { completion.close(); },
-      pick: function() { widget.pick(); }
+      close: () => { completion.close(); },
+      pick: () => { widget.pick(); }
     }));
 
     if (options.closeOnUnfocus !== false) {
       var closingOnBlur;
-      cm.on("blur", this.onBlur = function() { closingOnBlur = setTimeout(function() { completion.close(); }, 100); });
-      cm.on("focus", this.onFocus = function() { clearTimeout(closingOnBlur); });
+      cm.on("blur", this.onBlur = () => { closingOnBlur = setTimeout(() => { completion.close(); }, 100); });
+      cm.on("focus", this.onFocus = () => { clearTimeout(closingOnBlur); });
     }
 
     var startScroll = cm.getScrollInfo();
-    cm.on("scroll", this.onScroll = function() {
+    cm.on("scroll", this.onScroll = () => {
       var curScroll = cm.getScrollInfo(), editor = cm.getWrapperElement().getBoundingClientRect();
       var newTop = top + startScroll.top - curScroll.top;
       var point = newTop - (window.pageYOffset || (document.documentElement || document.body).scrollTop);
@@ -215,16 +215,16 @@
       hints.style.left = (left + startScroll.left - curScroll.left) + "px";
     });
 
-    CodeMirror.on(hints, "dblclick", function(e) {
+    CodeMirror.on(hints, "dblclick", e => {
       var t = e.target || e.srcElement;
       if (t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
     });
-    CodeMirror.on(hints, "click", function(e) {
+    CodeMirror.on(hints, "click", e => {
       var t = e.target || e.srcElement;
       if (t.hintId != null) widget.changeActive(t.hintId);
     });
-    CodeMirror.on(hints, "mousedown", function() {
-      setTimeout(function(){cm.focus();}, 20);
+    CodeMirror.on(hints, "mousedown", () => {
+      setTimeout(() => {cm.focus();}, 20);
     });
 
     CodeMirror.signal(data, "select", completions[0], hints.firstChild);

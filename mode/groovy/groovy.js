@@ -1,4 +1,4 @@
-CodeMirror.defineMode("groovy", function(config) {
+CodeMirror.defineMode("groovy", config => {
   function words(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -144,17 +144,15 @@ CodeMirror.defineMode("groovy", function(config) {
   // Interface
 
   return {
-    startState: function(basecolumn) {
-      return {
-        tokenize: [tokenBase],
-        context: new Context((basecolumn || 0) - config.indentUnit, 0, "top", false),
-        indented: 0,
-        startOfLine: true,
-        lastToken: null
-      };
-    },
+    startState: basecolumn => ({
+      tokenize: [tokenBase],
+      context: new Context((basecolumn || 0) - config.indentUnit, 0, "top", false),
+      indented: 0,
+      startOfLine: true,
+      lastToken: null
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       var ctx = state.context;
       if (stream.sol()) {
         if (ctx.align == null) ctx.align = false;
@@ -193,7 +191,7 @@ CodeMirror.defineMode("groovy", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (!state.tokenize[state.tokenize.length-1].isBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0), ctx = state.context;
       if (ctx.type == "statement" && !expectExpression(state.lastToken)) ctx = ctx.prev;

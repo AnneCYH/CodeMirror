@@ -25,7 +25,7 @@ function test(name, run, expectedFail) {
 }
 var namespace = "";
 function testCM(name, run, opts, expectedFail) {
-  return test(namespace + name, function() {
+  return test(namespace + name, () => {
     var place = document.getElementById("testground"), cm = window.cm = CodeMirror(place, opts);
     var successful = false;
     try {
@@ -99,7 +99,7 @@ function runTests(callback) {
         totalTime = 0;
         delay = 50;
       }
-      setTimeout(function(){step(i + 1);}, delay);
+      setTimeout(() => {step(i + 1);}, delay);
     } else { // Quit tests
       running = false;
       return null;

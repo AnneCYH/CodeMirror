@@ -1,7 +1,7 @@
 /**
  * Author: Koh Zi Han, based on implementation by Koh Zi Chun
  */
-CodeMirror.defineMode("scheme", function () {
+CodeMirror.defineMode("scheme", () => {
     var BUILTIN = "builtin", COMMENT = "comment", STRING = "string",
         ATOM = "atom", NUMBER = "number", BRACKET = "bracket";
     var INDENT_WORD_SKIP = 2;
@@ -54,16 +54,14 @@ CodeMirror.defineMode("scheme", function () {
     }
 
     return {
-        startState: function () {
-            return {
-                indentStack: null,
-                indentation: 0,
-                mode: false,
-                sExprComment: false
-            };
-        },
+        startState: () => ({
+            indentStack: null,
+            indentation: 0,
+            mode: false,
+            sExprComment: false
+        }),
 
-        token: function (stream, state) {
+        token: (stream, state) => {
             if (state.indentStack == null && stream.sol()) {
                 // update indentation, but only if indentStack is empty
                 state.indentation = stream.indentation();
@@ -220,7 +218,7 @@ CodeMirror.defineMode("scheme", function () {
             return (typeof state.sExprComment == "number") ? COMMENT : returnType;
         },
 
-        indent: function (state) {
+        indent: state => {
             if (state.indentStack == null) return state.indentation;
             return state.indentStack.indent;
         },

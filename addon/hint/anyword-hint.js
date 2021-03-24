@@ -3,7 +3,7 @@
 
   var WORD = /[\w$]+/, RANGE = 500;
 
-  CodeMirror.registerHelper("hint", "anyword", function(editor, options) {
+  CodeMirror.registerHelper("hint", "anyword", (editor, options) => {
     var word = options && options.word || WORD;
     var range = options && options.range || RANGE;
     var cur = editor.getCursor(), curLine = editor.getLine(cur.line);

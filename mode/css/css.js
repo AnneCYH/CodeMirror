@@ -73,7 +73,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   }
 
   function tokenString(quote, nonInclusive) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped)
@@ -98,14 +98,14 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   }
 
   return {
-    startState: function(base) {
-      return {tokenize: tokenBase,
-              baseIndent: base || 0,
-              stack: [],
-              lastToken: null};
-    },
+    startState: base => ({
+      tokenize: tokenBase,
+      baseIndent: base || 0,
+      stack: [],
+      lastToken: null
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
 
       // Use these terms when applicable (see http://www.xanthir.com/blog/b4E50)
       //
@@ -291,7 +291,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       return state.lastToken = style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       var n = state.stack.length;
       if (/^\}/.test(textAfter))
         n -= state.stack[n-1] == "propertyValue" ? 2 : 1;
@@ -305,7 +305,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   };
 });
 
-(function() {
+((() => {
   function keySet(array) {
     var keys = {};
     for (var i = 0; i < array.length; ++i) {
@@ -553,7 +553,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     colorKeywords: colorKeywords,
     valueKeywords: valueKeywords,
     hooks: {
-      "<": function(stream, state) {
+      "<": (stream, state) => {
         function tokenSGMLComment(stream, state) {
           var dashes = 0, ch;
           while ((ch = stream.next()) != null) {
@@ -570,7 +570,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
           return tokenSGMLComment(stream, state);
         }
       },
-      "/": function(stream, state) {
+      "/": (stream, state) => {
         if (stream.eat("*")) {
           state.tokenize = tokenCComment;
           return tokenCComment(stream, state);
@@ -589,20 +589,20 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     valueKeywords: valueKeywords,
     allowNested: true,
     hooks: {
-      ":": function(stream) {
+      ":": stream => {
         if (stream.match(/\s*{/)) {
           return [null, "{"];
         }
         return false;
       },
-      "$": function(stream) {
+      "$": stream => {
         stream.match(/^[\w-]+/);
         if (stream.peek() == ":") {
           return ["variable", "variable-definition"];
         }
         return ["variable", "variable"];
       },
-      "/": function(stream, state) {
+      "/": (stream, state) => {
         if (stream.eat("/")) {
           stream.skipToEnd();
           return ["comment", "comment"];
@@ -613,7 +613,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
           return ["operator", "operator"];
         }
       },
-      "#": function(stream) {
+      "#": stream => {
         if (stream.eat("{")) {
           return ["operator", "interpolation"];
         } else {
@@ -624,4 +624,4 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     },
     name: "css"
   });
-})();
+}))();

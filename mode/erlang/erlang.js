@@ -9,7 +9,7 @@
 
 CodeMirror.defineMIME("text/x-erlang", "erlang");
 
-CodeMirror.defineMode("erlang", function(cmCfg) {
+CodeMirror.defineMode("erlang", cmCfg => {
 
   function rval(state,_stream,type) {
     // distinguish between "." as terminator and record field operator
@@ -462,22 +462,18 @@ CodeMirror.defineMode("erlang", function(cmCfg) {
 
   return {
     startState:
-      function() {
-        return {tokenStack: [],
-                in_record:  false,
-                in_string:  false,
-                in_atom:    false};
-      },
+      () => ({
+        tokenStack: [],
+        in_record:  false,
+        in_string:  false,
+        in_atom:    false
+      }),
 
     token:
-      function(stream, state) {
-        return tokenize(stream, state);
-      },
+      (stream, state) => tokenize(stream, state),
 
     indent:
-      function(state, textAfter) {
-        return myIndent(state,textAfter);
-      },
+      (state, textAfter) => myIndent(state,textAfter),
 
     lineComment: "%"
   };

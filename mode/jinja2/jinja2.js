@@ -1,4 +1,4 @@
-CodeMirror.defineMode("jinja2", function() {
+CodeMirror.defineMode("jinja2", () => {
     var keywords = ["block", "endblock", "for", "endfor", "in", "true", "false",
                     "loop", "none", "self", "super", "if", "as", "not", "and",
                     "else", "import", "with", "without", "context"];
@@ -18,7 +18,7 @@ CodeMirror.defineMode("jinja2", function() {
         if (close == "{") {
             close = "}";
         }
-        return function (stream, state) {
+        return (stream, state) => {
             var ch = stream.next();
             if ((ch == close || (ch == "-" && stream.eat(close)))
                 && stream.eat("}")) {
@@ -32,11 +32,9 @@ CodeMirror.defineMode("jinja2", function() {
         };
     }
     return {
-        startState: function () {
-            return {tokenize: tokenBase};
-        },
-        token: function (stream, state) {
-            return state.tokenize(stream, state);
-        }
+        startState: () => ({
+            tokenize: tokenBase
+        }),
+        token: (stream, state) => state.tokenize(stream, state)
     };
 });

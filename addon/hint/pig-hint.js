@@ -1,4 +1,4 @@
-(function () {
+((() => {
   function forEach(arr, f) {
     for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
   }
@@ -42,7 +42,7 @@
   }
 
   function pigHint(editor) {
-    return scriptHint(editor, pigKeywordsU, function (e, cur) {return e.getTokenAt(cur);});
+    return scriptHint(editor, pigKeywordsU, (e, cur) => e.getTokenAt(cur));
   }
   CodeMirror.pigHint = pigHint; // deprecated
   CodeMirror.registerHelper("hint", "pig", hinter);
@@ -116,4 +116,4 @@
     }
     return found;
   }
-})();
+}))();

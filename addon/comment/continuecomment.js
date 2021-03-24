@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var modes = ["clike", "css", "javascript"];
   for (var i = 0; i < modes.length; ++i)
     CodeMirror.extendMode(modes[i], {blockCommentContinue: " * "});
@@ -42,7 +42,7 @@
       return CodeMirror.Pass;
   }
 
-  CodeMirror.defineOption("continueComments", null, function(cm, val, prev) {
+  CodeMirror.defineOption("continueComments", null, (cm, val, prev) => {
     if (prev && prev != CodeMirror.Init)
       cm.removeKeyMap("continueComment");
     if (val) {
@@ -51,4 +51,4 @@
       cm.addKeyMap(map);
     }
   });
-})();
+}))();

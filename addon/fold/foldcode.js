@@ -30,13 +30,13 @@
     if (!range || range.cleared) return;
 
     var myWidget = makeWidget(options);
-    CodeMirror.on(myWidget, "mousedown", function() { myRange.clear(); });
+    CodeMirror.on(myWidget, "mousedown", () => { myRange.clear(); });
     var myRange = cm.markText(range.from, range.to, {
       replacedWith: myWidget,
       clearOnEnter: true,
       __isFold: true
     });
-    myRange.on("clear", function(from, to) {
+    myRange.on("clear", (from, to) => {
       CodeMirror.signal(cm, "unfold", cm, from, to);
     });
     CodeMirror.signal(cm, "fold", cm, range.from, range.to);
@@ -54,16 +54,14 @@
   }
 
   // Clumsy backwards-compatible interface
-  CodeMirror.newFoldFunction = function(rangeFinder, widget) {
-    return function(cm, pos) { doFold(cm, pos, {rangeFinder: rangeFinder, widget: widget}); };
-  };
+  CodeMirror.newFoldFunction = (rangeFinder, widget) => (cm, pos) => { doFold(cm, pos, {rangeFinder: rangeFinder, widget: widget}); };
 
   // New-style interface
   CodeMirror.defineExtension("foldCode", function(pos, options) { doFold(this, pos, options); });
 
   CodeMirror.registerHelper("fold", "combine", function() {
     var funcs = Array.prototype.slice.call(arguments, 0);
-    return function(cm, start) {
+    return (cm, start) => {
       for (var i = 0; i < funcs.length; ++i) {
         var found = funcs[i](cm, start);
         if (found) return found;

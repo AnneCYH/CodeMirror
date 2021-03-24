@@ -1,4 +1,4 @@
-CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
+CodeMirror.defineMode("htmlmixed", (config, parserConfig) => {
   var htmlMode = CodeMirror.getMode(config, {name: "xml", htmlMode: true});
   var cssMode = CodeMirror.getMode(config, "css");
 
@@ -68,23 +68,21 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
   }
 
   return {
-    startState: function() {
+    startState: () => {
       var state = htmlMode.startState();
       return {token: html, localMode: null, localState: null, htmlState: state};
     },
 
-    copyState: function(state) {
+    copyState: state => {
       if (state.localState)
         var local = CodeMirror.copyState(state.localMode, state.localState);
       return {token: state.token, localMode: state.localMode, localState: local,
               htmlState: CodeMirror.copyState(htmlMode, state.htmlState)};
     },
 
-    token: function(stream, state) {
-      return state.token(stream, state);
-    },
+    token: (stream, state) => state.token(stream, state),
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (!state.localMode || /^\s*<\//.test(textAfter))
         return htmlMode.indent(state.htmlState, textAfter);
       else if (state.localMode.indent)
@@ -95,9 +93,10 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
 
     electricChars: "/{}:",
 
-    innerMode: function(state) {
-      return {state: state.localState || state.htmlState, mode: state.localMode || htmlMode};
-    }
+    innerMode: state => ({
+      state: state.localState || state.htmlState,
+      mode: state.localMode || htmlMode
+    })
   };
 }, "xml", "javascript", "css");
 

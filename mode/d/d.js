@@ -1,4 +1,4 @@
-CodeMirror.defineMode("d", function(config, parserConfig) {
+CodeMirror.defineMode("d", (config, parserConfig) => {
   var indentUnit = config.indentUnit,
       statementIndentUnit = parserConfig.statementIndentUnit || indentUnit,
       keywords = parserConfig.keywords || {},
@@ -62,7 +62,7 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, next, end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {end = true; break;}
@@ -121,16 +121,14 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
   // Interface
 
   return {
-    startState: function(basecolumn) {
-      return {
-        tokenize: null,
-        context: new Context((basecolumn || 0) - indentUnit, 0, "top", false),
-        indented: 0,
-        startOfLine: true
-      };
-    },
+    startState: basecolumn => ({
+      tokenize: null,
+      context: new Context((basecolumn || 0) - indentUnit, 0, "top", false),
+      indented: 0,
+      startOfLine: true
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       var ctx = state.context;
       if (stream.sol()) {
         if (ctx.align == null) ctx.align = false;
@@ -159,7 +157,7 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize != tokenBase && state.tokenize != null) return CodeMirror.Pass;
       var ctx = state.context, firstChar = textAfter && textAfter.charAt(0);
       if (ctx.type == "statement" && firstChar == "}") ctx = ctx.prev;
@@ -173,7 +171,7 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
   };
 });
 
-(function() {
+((() => {
   function words(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -196,10 +194,10 @@ CodeMirror.defineMode("d", function(config, parserConfig) {
                    "ucent uint ulong ushort wchar wstring void size_t sizediff_t"),
     atoms: words("exit failure success true false null"),
     hooks: {
-      "@": function(stream, _state) {
+      "@": (stream, _state) => {
         stream.eatWhile(/[\w\$_]/);
         return "meta";
       }
     }
   });
-}());
+})());

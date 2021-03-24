@@ -2,7 +2,7 @@
  * Link to the project's GitHub page:
  * https://github.com/pickhardt/coffeescript-codemirror-mode
  */
-CodeMirror.defineMode('coffeescript', function(conf) {
+CodeMirror.defineMode('coffeescript', conf => {
     var ERRORCLASS = 'error';
 
     function wordRegexp(words) {
@@ -170,7 +170,7 @@ CodeMirror.defineMode('coffeescript', function(conf) {
 
     function tokenFactory(delimiter, outclass) {
         var singleline = delimiter.length == 1;
-        return function(stream, state) {
+        return (stream, state) => {
             while (!stream.eol()) {
                 stream.eatWhile(/[^'"\/\\]/);
                 if (stream.eat('\\')) {
@@ -309,17 +309,15 @@ CodeMirror.defineMode('coffeescript', function(conf) {
     }
 
     var external = {
-        startState: function(basecolumn) {
-            return {
-              tokenize: tokenBase,
-              scopes: [{offset:basecolumn || 0, type:'coffee'}],
-              lastToken: null,
-              lambda: false,
-              dedent: 0
-          };
-        },
+        startState: basecolumn => ({
+            tokenize: tokenBase,
+            scopes: [{offset:basecolumn || 0, type:'coffee'}],
+            lastToken: null,
+            lambda: false,
+            dedent: 0
+        }),
 
-        token: function(stream, state) {
+        token: (stream, state) => {
             var style = tokenLexer(stream, state);
 
             state.lastToken = {style:style, content: stream.current()};
@@ -331,7 +329,7 @@ CodeMirror.defineMode('coffeescript', function(conf) {
             return style;
         },
 
-        indent: function(state) {
+        indent: state => {
             if (state.tokenize != tokenBase) {
                 return 0;
             }

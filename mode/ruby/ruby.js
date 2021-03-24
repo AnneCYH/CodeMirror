@@ -1,4 +1,4 @@
-CodeMirror.defineMode("ruby", function(config) {
+CodeMirror.defineMode("ruby", config => {
   function wordObj(words) {
     var o = {};
     for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
@@ -122,7 +122,7 @@ CodeMirror.defineMode("ruby", function(config) {
 
   function tokenBaseUntilBrace() {
     var depth = 1;
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.peek() == "}") {
         depth--;
         if (depth == 0) {
@@ -137,7 +137,7 @@ CodeMirror.defineMode("ruby", function(config) {
   }
   function tokenBaseOnce() {
     var alreadyCalled = false;
-    return function(stream, state) {
+    return (stream, state) => {
       if (alreadyCalled) {
         state.tokenize.pop();
         return state.tokenize[state.tokenize.length-1](stream, state);
@@ -147,7 +147,7 @@ CodeMirror.defineMode("ruby", function(config) {
     };
   }
   function readQuoted(quote, style, embed, unescaped) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
 
       if (state.context.type === 'read-quoted-paused') {
@@ -178,7 +178,7 @@ CodeMirror.defineMode("ruby", function(config) {
     };
   }
   function readHereDoc(phrase) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.match(phrase)) state.tokenize.pop();
       else stream.skipToEnd();
       return "string";
@@ -192,16 +192,16 @@ CodeMirror.defineMode("ruby", function(config) {
   }
 
   return {
-    startState: function() {
-      return {tokenize: [tokenBase],
-              indented: 0,
-              context: {type: "top", indented: -config.indentUnit},
-              continuedLine: false,
-              lastTok: null,
-              varList: false};
-    },
+    startState: () => ({
+      tokenize: [tokenBase],
+      indented: 0,
+      context: {type: "top", indented: -config.indentUnit},
+      continuedLine: false,
+      lastTok: null,
+      varList: false
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.sol()) state.indented = stream.indentation();
       var style = state.tokenize[state.tokenize.length-1](stream, state), kwtype;
       if (style == "ident") {
@@ -228,7 +228,7 @@ CodeMirror.defineMode("ruby", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize[state.tokenize.length-1] != tokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0);
       var ct = state.context;

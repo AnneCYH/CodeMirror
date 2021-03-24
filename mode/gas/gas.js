@@ -203,7 +203,7 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
     registers.r14 = registers.lr;
     registers.r15 = registers.pc;
 
-    custom.push(function(ch, stream) {
+    custom.push((ch, stream) => {
       if (ch === '#') {
         stream.eatWhile(/\w/);
         return "number";
@@ -242,13 +242,11 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
   }
 
   return {
-    startState: function() {
-      return {
-        tokenize: null
-      };
-    },
+    startState: () => ({
+      tokenize: null
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (state.tokenize) {
         return state.tokenize(stream, state);
       }

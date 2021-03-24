@@ -1,6 +1,6 @@
 // Open simple dialogs on top of an editor. Relies on dialog.css.
 
-(function() {
+((() => {
   function dialogDiv(cm, template, bottom) {
     var wrap = cm.getWrapperElement();
     var dialog;
@@ -24,7 +24,7 @@
     }
     var inp = dialog.getElementsByTagName("input")[0], button;
     if (inp) {
-      CodeMirror.on(inp, "keydown", function(e) {
+      CodeMirror.on(inp, "keydown", e => {
         if (options && options.onKeyDown && options.onKeyDown(e, inp.value, close)) { return; }
         if (e.keyCode == 13 || e.keyCode == 27) {
           CodeMirror.e_stop(e);
@@ -34,13 +34,13 @@
         }
       });
       if (options && options.onKeyUp) {
-        CodeMirror.on(inp, "keyup", function(e) {options.onKeyUp(e, inp.value, close);});
+        CodeMirror.on(inp, "keyup", e => {options.onKeyUp(e, inp.value, close);});
       }
       if (options && options.value) inp.value = options.value;
       inp.focus();
       CodeMirror.on(inp, "blur", close);
     } else if (button = dialog.getElementsByTagName("button")[0]) {
-      CodeMirror.on(button, "click", function() {
+      CodeMirror.on(button, "click", () => {
         close();
         me.focus();
       });
@@ -63,18 +63,18 @@
     buttons[0].focus();
     for (var i = 0; i < buttons.length; ++i) {
       var b = buttons[i];
-      (function(callback) {
-        CodeMirror.on(b, "click", function(e) {
+      ((callback => {
+        CodeMirror.on(b, "click", e => {
           CodeMirror.e_preventDefault(e);
           close();
           if (callback) callback(me);
         });
-      })(callbacks[i]);
-      CodeMirror.on(b, "blur", function() {
+      }))(callbacks[i]);
+      CodeMirror.on(b, "blur", () => {
         --blurring;
-        setTimeout(function() { if (blurring <= 0) close(); }, 200);
+        setTimeout(() => { if (blurring <= 0) close(); }, 200);
       });
-      CodeMirror.on(b, "focus", function() { ++blurring; });
+      CodeMirror.on(b, "focus", () => { ++blurring; });
     }
   });
-})();
+}))();

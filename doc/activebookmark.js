@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var pending = false, prevVal = null;
 
   function updateSoon() {
@@ -39,4 +39,4 @@
 
   window.addEventListener("scroll", updateSoon);
   window.addEventListener("load", updateSoon);
-})();
+}))();

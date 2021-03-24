@@ -1,4 +1,4 @@
-CodeMirror.colorize = (function() {
+CodeMirror.colorize = ((() => {
 
   var isBlock = /^(p|li|div|h\\d|pre|blockquote|td)$/;
 
@@ -10,7 +10,7 @@ CodeMirror.colorize = (function() {
     }
   }
 
-  return function(collection, defaultMode) {
+  return (collection, defaultMode) => {
     if (!collection) collection = document.body.getElementsByTagName("pre");
 
     for (var i = 0; i < collection.length; ++i) {
@@ -26,4 +26,4 @@ CodeMirror.colorize = (function() {
       node.className += " cm-s-default";
     }
   };
-})();
+}))();

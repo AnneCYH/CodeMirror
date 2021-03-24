@@ -1,4 +1,4 @@
-CodeMirror.defineMode("apl", function() {
+CodeMirror.defineMode("apl", () => {
   var builtInOps = {
     ".": "innerProduct",
     "\\": "scan",
@@ -67,10 +67,10 @@ CodeMirror.defineMode("apl", function() {
   var isArrow = /←/;
   var isComment = /[⍝#].*$/;
 
-  var stringEater = function(type) {
+  var stringEater = type => {
     var prev;
     prev = false;
-    return function(c) {
+    return c => {
       prev = c;
       if (c === type) {
         return prev === "\\";
@@ -79,16 +79,14 @@ CodeMirror.defineMode("apl", function() {
     };
   };
   return {
-    startState: function() {
-      return {
-        prev: false,
-        func: false,
-        op: false,
-        string: false,
-        escape: false
-      };
-    },
-    token: function(stream, state) {
+    startState: () => ({
+      prev: false,
+      func: false,
+      op: false,
+      string: false,
+      escape: false
+    }),
+    token: (stream, state) => {
       var ch, funcName, word;
       if (stream.eatSpace()) {
         return null;

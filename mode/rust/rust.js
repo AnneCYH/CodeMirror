@@ -1,4 +1,4 @@
-CodeMirror.defineMode("rust", function() {
+CodeMirror.defineMode("rust", () => {
   var indentUnit = 4, altIndentUnit = 2;
   var valKeywords = {
     "if": "if-style", "while": "if-style", "else": "else-style",
@@ -11,12 +11,12 @@ CodeMirror.defineMode("rust", function() {
     "export": "else-style", "copy": "op", "log": "op", "log_err": "op",
     "use": "op", "bind": "op", "self": "atom"
   };
-  var typeKeywords = function() {
+  var typeKeywords = (() => {
     var keywords = {"fn": "fn", "block": "fn", "obj": "obj"};
     var atoms = "bool uint int i8 i16 i32 i64 u8 u16 u32 u64 float f32 f64 str char".split(" ");
     for (var i = 0, e = atoms.length; i < e; ++i) keywords[atoms[i]] = "atom";
     return keywords;
-  }();
+  })();
   var operatorChar = /[+\-*&%=<>!?|\.@]/;
 
   // Tokenizer
@@ -103,7 +103,7 @@ CodeMirror.defineMode("rust", function() {
   }
 
   function tokenComment(depth) {
-    return function(stream, state) {
+    return (stream, state) => {
       var lastCh = null, ch;
       while (ch = stream.next()) {
         if (ch == "/" && lastCh == "*") {
@@ -137,7 +137,7 @@ CodeMirror.defineMode("rust", function() {
   }
 
   function pushlex(type, info) {
-    var result = function() {
+    var result = () => {
       var state = cx.state;
       state.lexical = {indented: state.indented, column: cx.stream.column(),
                        type: type, prev: state.lexical, info: info};
@@ -163,7 +163,7 @@ CodeMirror.defineMode("rust", function() {
       if (type == end) return cont();
       return cont(more);
     }
-    return function(type) {
+    return type => {
       if (type == end) return cont();
       return pass(comb, more);
     };
@@ -389,17 +389,15 @@ CodeMirror.defineMode("rust", function() {
   }
 
   return {
-    startState: function() {
-      return {
-        tokenize: tokenBase,
-        cc: [],
-        lexical: {indented: -indentUnit, column: 0, type: "top", align: false},
-        keywords: valKeywords,
-        indented: 0
-      };
-    },
+    startState: () => ({
+      tokenize: tokenBase,
+      cc: [],
+      lexical: {indented: -indentUnit, column: 0, type: "top", align: false},
+      keywords: valKeywords,
+      indented: 0
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.sol()) {
         if (!state.lexical.hasOwnProperty("align"))
           state.lexical.align = false;
@@ -416,7 +414,7 @@ CodeMirror.defineMode("rust", function() {
       return parse(state, stream, style);
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize != tokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical,
           type = lexical.type, closing = firstChar == type;

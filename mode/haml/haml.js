@@ -2,12 +2,12 @@
   "use strict";
 
   // full haml mode. This handled embeded ruby and html fragments too
-  CodeMirror.defineMode("haml", function(config) {
+  CodeMirror.defineMode("haml", config => {
     var htmlMode = CodeMirror.getMode(config, {name: "htmlmixed"});
     var rubyMode = CodeMirror.getMode(config, "ruby");
 
     function rubyInQuote(endQuote) {
-      return function(stream, state) {
+      return (stream, state) => {
         var ch = stream.peek();
         if (ch == endQuote && state.rubyState.tokenize.length == 1) {
           // step out of ruby context as it seems to complete processing all the braces
@@ -85,7 +85,7 @@
 
     return {
       // default to html mode
-      startState: function() {
+      startState: () => {
         var htmlState = htmlMode.startState();
         var rubyState = rubyMode.startState();
         return {
@@ -97,17 +97,15 @@
         };
       },
 
-      copyState: function(state) {
-        return {
-          htmlState : CodeMirror.copyState(htmlMode, state.htmlState),
-          rubyState: CodeMirror.copyState(rubyMode, state.rubyState),
-          indented: state.indented,
-          previousToken: state.previousToken,
-          tokenize: state.tokenize
-        };
-      },
+      copyState: state => ({
+        htmlState : CodeMirror.copyState(htmlMode, state.htmlState),
+        rubyState: CodeMirror.copyState(rubyMode, state.rubyState),
+        indented: state.indented,
+        previousToken: state.previousToken,
+        tokenize: state.tokenize
+      }),
 
-      token: function(stream, state) {
+      token: (stream, state) => {
         if (stream.sol()) {
           state.indented = stream.indentation();
           state.startOfLine = true;
@@ -143,9 +141,7 @@
         return style;
       },
 
-      indent: function(state) {
-        return state.indented;
-      }
+      indent: state => state.indented
     };
   }, "htmlmixed", "ruby");
 

@@ -22,14 +22,14 @@
  * See demos/closetag.html for a usage example.
  */
 
-(function() {
-  CodeMirror.defineOption("autoCloseTags", false, function(cm, val, old) {
+((() => {
+  CodeMirror.defineOption("autoCloseTags", false, (cm, val, old) => {
     if (val && (old == CodeMirror.Init || !old)) {
       var map = {name: "autoCloseTags"};
       if (typeof val != "object" || val.whenClosing)
-        map["'/'"] = function(cm) { return autoCloseSlash(cm); };
+        map["'/'"] = cm => autoCloseSlash(cm);
       if (typeof val != "object" || val.whenOpening)
-        map["'>'"] = function(cm) { return autoCloseGT(cm); };
+        map["'>'"] = cm => autoCloseGT(cm);
       cm.addKeyMap(map);
     } else if (!val && (old != CodeMirror.Init && old)) {
       cm.removeKeyMap("autoCloseTags");
@@ -84,4 +84,4 @@
       if (collection[i] == elt) return i;
     return -1;
   }
-})();
+}))();

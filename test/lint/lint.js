@@ -15,7 +15,7 @@
 var fs = require("fs"), acorn = require("./acorn.js"), walk = require("./walk.js");
 
 var scopePasser = walk.make({
-  ScopeBody: function(node, prev, c) { c(node, node.scope); }
+  ScopeBody: (node, prev, c) => { c(node, node.scope); }
 });
 
 function checkFile(fileName) {
@@ -46,7 +46,7 @@ function checkFile(fileName) {
   var scopes = [];
 
   walk.simple(parsed, {
-    ScopeBody: function(node, scope) {
+    ScopeBody: (node, scope) => {
       node.scope = scope;
       scopes.push(scope);
     }
@@ -67,9 +67,9 @@ function checkFile(fileName) {
   }
 
   walk.simple(parsed, {
-    UpdateExpression: function(node, scope) {checkLHS(node.argument, scope);},
-    AssignmentExpression: function(node, scope) {checkLHS(node.left, scope);},
-    Identifier: function(node, scope) {
+    UpdateExpression: (node, scope) => {checkLHS(node.argument, scope);},
+    AssignmentExpression: (node, scope) => {checkLHS(node.left, scope);},
+    Identifier: (node, scope) => {
       // Mark used identifiers
       for (var cur = scope; cur; cur = cur.prev)
         if (node.name in cur.vars) {
@@ -77,7 +77,7 @@ function checkFile(fileName) {
           return;
         }
     },
-    FunctionExpression: function(node) {
+    FunctionExpression: node => {
       if (node.id) fail("Named function expression", node.loc);
     }
   }, scopePasser);
@@ -100,7 +100,7 @@ function fail(msg, pos) {
 }
 
 function checkDir(dir) {
-  fs.readdirSync(dir).forEach(function(file) {
+  fs.readdirSync(dir).forEach(file => {
     var fname = dir + "/" + file;
     if (/\.js$/.test(file)) checkFile(fname);
     else if (file != "dep" && fs.lstatSync(fname).isDirectory()) checkDir(fname);
@@ -109,4 +109,4 @@ function checkDir(dir) {
 
 exports.checkDir = checkDir;
 exports.checkFile = checkFile;
-exports.success = function() { return !failed; };
+exports.success = () => !failed;

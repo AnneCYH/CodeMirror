@@ -1,4 +1,4 @@
-CodeMirror.registerHelper("fold", "brace", function(cm, start) {
+CodeMirror.registerHelper("fold", "brace", (cm, start) => {
   var line = start.line, lineText = cm.getLine(line);
   var startCh, tokenType;
 
@@ -47,7 +47,7 @@ CodeMirror.registerHelper("fold", "brace", function(cm, start) {
 });
 CodeMirror.braceRangeFinder = CodeMirror.fold.brace; // deprecated
 
-CodeMirror.registerHelper("fold", "import", function(cm, start) {
+CodeMirror.registerHelper("fold", "import", (cm, start) => {
   function hasImport(line) {
     if (line < cm.firstLine() || line > cm.lastLine()) return null;
     var start = cm.getTokenAt(CodeMirror.Pos(line, 1));
@@ -72,7 +72,7 @@ CodeMirror.registerHelper("fold", "import", function(cm, start) {
 });
 CodeMirror.importRangeFinder = CodeMirror.fold["import"]; // deprecated
 
-CodeMirror.registerHelper("fold", "include", function(cm, start) {
+CodeMirror.registerHelper("fold", "include", (cm, start) => {
   function hasInclude(line) {
     if (line < cm.firstLine() || line > cm.lastLine()) return null;
     var start = cm.getTokenAt(CodeMirror.Pos(line, 1));

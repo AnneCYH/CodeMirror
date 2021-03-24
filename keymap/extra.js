@@ -29,14 +29,14 @@
 
   function moveSelectedLines(cm, dist) {
     var head = cm.getCursor("head"), anchor = cm.getCursor("anchor");
-    cm.operation(function() {
+    cm.operation(() => {
       var moved = moveLines(cm, Math.min(head.line, anchor.line), Math.max(head.line, anchor.line), dist);
       cm.setSelection(Pos(anchor.line + moved, anchor.ch), Pos(head.line + moved, head.ch));
     });
   }
 
-  CodeMirror.commands.moveLinesUp = function(cm) { moveSelectedLines(cm, -1); };
-  CodeMirror.commands.moveLinesDown = function(cm) { moveSelectedLines(cm, 1); };
+  CodeMirror.commands.moveLinesUp = cm => { moveSelectedLines(cm, -1); };
+  CodeMirror.commands.moveLinesDown = cm => { moveSelectedLines(cm, 1); };
 
   CodeMirror.keyMap["default"]["Alt-Up"] = "moveLinesUp";
   CodeMirror.keyMap["default"]["Alt-Down"] = "moveLinesDown";

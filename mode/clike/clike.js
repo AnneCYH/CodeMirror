@@ -1,4 +1,4 @@
-CodeMirror.defineMode("clike", function(config, parserConfig) {
+CodeMirror.defineMode("clike", (config, parserConfig) => {
   var indentUnit = config.indentUnit,
       statementIndentUnit = parserConfig.statementIndentUnit || indentUnit,
       dontAlignCalls = parserConfig.dontAlignCalls,
@@ -59,7 +59,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, next, end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {end = true; break;}
@@ -106,16 +106,14 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   // Interface
 
   return {
-    startState: function(basecolumn) {
-      return {
-        tokenize: null,
-        context: new Context((basecolumn || 0) - indentUnit, 0, "top", false),
-        indented: 0,
-        startOfLine: true
-      };
-    },
+    startState: basecolumn => ({
+      tokenize: null,
+      context: new Context((basecolumn || 0) - indentUnit, 0, "top", false),
+      indented: 0,
+      startOfLine: true
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       var ctx = state.context;
       if (stream.sol()) {
         if (ctx.align == null) ctx.align = false;
@@ -144,7 +142,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize != tokenBase && state.tokenize != null) return CodeMirror.Pass;
       var ctx = state.context, firstChar = textAfter && textAfter.charAt(0);
       if (ctx.type == "statement" && firstChar == "}") ctx = ctx.prev;
@@ -163,7 +161,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   };
 });
 
-(function() {
+((() => {
   function words(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -234,7 +232,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     blockKeywords: words("catch class do else finally for if switch try while"),
     atoms: words("true false null"),
     hooks: {
-      "@": function(stream) {
+      "@": stream => {
         stream.eatWhile(/[\w\$_]/);
         return "meta";
       }
@@ -256,7 +254,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
                     " sbyte float string ushort uint ulong"),
     atoms: words("true false null"),
     hooks: {
-      "@": function(stream, state) {
+      "@": (stream, state) => {
         if (stream.eat('"')) {
           state.tokenize = tokenAtString;
           return tokenAtString(stream, state);
@@ -297,7 +295,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     blockKeywords: words("catch class do else finally for forSome if match switch try while"),
     atoms: words("true false null"),
     hooks: {
-      "@": function(stream) {
+      "@": stream => {
         stream.eatWhile(/[\w\$_]/);
         return "meta";
       }
@@ -359,4 +357,4 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
                 "gl_MaxDrawBuffers"),
     hooks: {"#": cppHook}
   });
-}());
+})());

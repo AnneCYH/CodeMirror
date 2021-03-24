@@ -10,7 +10,7 @@
     if (event) return event;
 
     var ctrl, shift, alt;
-    var key = keyName.replace(/\w+-/g, function(type) {
+    var key = keyName.replace(/\w+-/g, type => {
       if (type == "Ctrl-") ctrl = true;
       else if (type == "Alt-") alt = true;
       else if (type == "Shift-") shift = true;
@@ -23,13 +23,13 @@
 
     return eventCache[keyName] = {
       type: "keydown", keyCode: code, ctrlKey: ctrl, shiftKey: shift, altKey: alt,
-      preventDefault: function(){}, stopPropagation: function(){}
+      preventDefault: () => {}, stopPropagation: () => {}
     };
   }
 
   function sim(name, start /*, actions... */) {
     var keys = Array.prototype.slice.call(arguments, 2);
-    testCM(name, function(cm) {
+    testCM(name, cm => {
       for (var i = 0; i < keys.length; ++i) {
         var cur = keys[i];
         if (cur instanceof Pos) cm.setCursor(cur);
@@ -39,8 +39,8 @@
     }, {keyMap: "emacs", value: start, mode: "javascript"});
   }
 
-  function at(line, ch) { return function(cm) { eqPos(cm.getCursor(), Pos(line, ch)); }; }
-  function txt(str) { return function(cm) { eq(cm.getValue(), str); }; }
+  function at(line, ch) { return cm => { eqPos(cm.getCursor(), Pos(line, ch)); }; }
+  function txt(str) { return cm => { eq(cm.getValue(), str); }; }
 
   sim("motionHSimple", "abc", "Ctrl-F", "Ctrl-F", "Ctrl-B", at(0, 1));
   sim("motionHMulti", "abcde",
@@ -125,9 +125,9 @@
   sim("transposeExpr", "do foo[bar] dah",
       Pos(0, 6), "Ctrl-Alt-T", txt("do [bar]foo dah"));
 
-  testCM("save", function(cm) {
+  testCM("save", cm => {
     var saved = false;
-    CodeMirror.commands.save = function(cm) { saved = cm.getValue(); };
+    CodeMirror.commands.save = cm => { saved = cm.getValue(); };
     cm.triggerOnKeyDown(fakeEvent("Ctrl-X"));
     cm.triggerOnKeyDown(fakeEvent("Ctrl-S"));
     is(saved, "hi");

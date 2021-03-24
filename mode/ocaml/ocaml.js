@@ -1,4 +1,4 @@
-CodeMirror.defineMode('ocaml', function() {
+CodeMirror.defineMode('ocaml', () => {
 
   var words = {
     'true': 'atom',
@@ -102,8 +102,11 @@ CodeMirror.defineMode('ocaml', function() {
   }
 
   return {
-    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
-    token: function(stream, state) {
+    startState: () => ({
+      tokenize: tokenBase,
+      commentLevel: 0
+    }),
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     },

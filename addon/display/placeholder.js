@@ -1,5 +1,5 @@
-(function() {
-  CodeMirror.defineOption("placeholder", "", function(cm, val, old) {
+((() => {
+  CodeMirror.defineOption("placeholder", "", (cm, val, old) => {
     var prev = old && old != CodeMirror.Init;
     if (val && !prev) {
       cm.on("focus", onFocus);
@@ -51,4 +51,4 @@
   function isEmpty(cm) {
     return (cm.lineCount() === 1) && (cm.getLine(0) === "");
   }
-})();
+}))();

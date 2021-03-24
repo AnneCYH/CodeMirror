@@ -3,7 +3,7 @@
  * is released.
  */
 
-CodeMirror.defineMode("sieve", function(config) {
+CodeMirror.defineMode("sieve", config => {
   function words(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -139,7 +139,7 @@ CodeMirror.defineMode("sieve", function(config) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped)
@@ -152,20 +152,20 @@ CodeMirror.defineMode("sieve", function(config) {
   }
 
   return {
-    startState: function(base) {
-      return {tokenize: tokenBase,
-              baseIndent: base || 0,
-              _indent: []};
-    },
+    startState: base => ({
+      tokenize: tokenBase,
+      baseIndent: base || 0,
+      _indent: []
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace())
         return null;
 
       return (state.tokenize || tokenBase)(stream, state);;
     },
 
-    indent: function(state, _textAfter) {
+    indent: (state, _textAfter) => {
       var length = state._indent.length;
       if (_textAfter && (_textAfter[0] == "}"))
         length--;

@@ -1,4 +1,4 @@
-CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
+CodeMirror.defineMode("markdown", (cmCfg, modeCfg) => {
 
   var htmlFound = CodeMirror.modes.hasOwnProperty("xml");
   var htmlMode = CodeMirror.getMode(cmCfg, htmlFound ? {name: "xml", htmlMode: true} : "text/plain");
@@ -14,7 +14,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
     scala: "text/x-scala"
   };
 
-  var getMode = (function () {
+  var getMode = ((() => {
     var i, modes = {}, mimes = {}, mime;
 
     var list = [];
@@ -37,10 +37,8 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
         modes[a] = aliases[a];
     }
 
-    return function (lang) {
-      return modes[lang] ? CodeMirror.getMode(cmCfg, modes[lang]) : null;
-    };
-  }());
+    return lang => modes[lang] ? CodeMirror.getMode(cmCfg, modes[lang]) : null;
+  })());
 
   // Should underscores in words open/close em/strong?
   if (modeCfg.underscoresBreakWords === undefined)
@@ -440,7 +438,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
 
   function inlineElement(type, endChar, next) {
     next = next || inlineNormal;
-    return function(stream, state) {
+    return (stream, state) => {
       stream.match(inlineRE(endChar));
       state.inline = state.f = next;
       return type;
@@ -448,65 +446,53 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
   }
 
   return {
-    startState: function() {
-      return {
-        f: blockNormal,
+    startState: () => ({
+      f: blockNormal,
+      prevLineHasContent: false,
+      thisLineHasContent: false,
+      block: blockNormal,
+      htmlState: CodeMirror.startState(htmlMode),
+      indentation: 0,
+      inline: inlineNormal,
+      text: handleText,
+      linkText: false,
+      linkTitle: false,
+      em: false,
+      strong: false,
+      header: false,
+      taskList: false,
+      list: false,
+      listDepth: 0,
+      quote: 0,
+      trailingSpace: 0,
+      trailingSpaceNewLine: false
+    }),
 
-        prevLineHasContent: false,
-        thisLineHasContent: false,
+    copyState: s => ({
+      f: s.f,
+      prevLineHasContent: s.prevLineHasContent,
+      thisLineHasContent: s.thisLineHasContent,
+      block: s.block,
+      htmlState: CodeMirror.copyState(htmlMode, s.htmlState),
+      indentation: s.indentation,
+      localMode: s.localMode,
+      localState: s.localMode ? CodeMirror.copyState(s.localMode, s.localState) : null,
+      inline: s.inline,
+      text: s.text,
+      linkTitle: s.linkTitle,
+      em: s.em,
+      strong: s.strong,
+      header: s.header,
+      taskList: s.taskList,
+      list: s.list,
+      listDepth: s.listDepth,
+      quote: s.quote,
+      trailingSpace: s.trailingSpace,
+      trailingSpaceNewLine: s.trailingSpaceNewLine,
+      md_inside: s.md_inside
+    }),
 
-        block: blockNormal,
-        htmlState: CodeMirror.startState(htmlMode),
-        indentation: 0,
-
-        inline: inlineNormal,
-        text: handleText,
-
-        linkText: false,
-        linkTitle: false,
-        em: false,
-        strong: false,
-        header: false,
-        taskList: false,
-        list: false,
-        listDepth: 0,
-        quote: 0,
-        trailingSpace: 0,
-        trailingSpaceNewLine: false
-      };
-    },
-
-    copyState: function(s) {
-      return {
-        f: s.f,
-
-        prevLineHasContent: s.prevLineHasContent,
-        thisLineHasContent: s.thisLineHasContent,
-
-        block: s.block,
-        htmlState: CodeMirror.copyState(htmlMode, s.htmlState),
-        indentation: s.indentation,
-
-        localMode: s.localMode,
-        localState: s.localMode ? CodeMirror.copyState(s.localMode, s.localState) : null,
-
-        inline: s.inline,
-        text: s.text,
-        linkTitle: s.linkTitle,
-        em: s.em,
-        strong: s.strong,
-        header: s.header,
-        taskList: s.taskList,
-        list: s.list,
-        listDepth: s.listDepth,
-        quote: s.quote,
-        trailingSpace: s.trailingSpace,
-        trailingSpaceNewLine: s.trailingSpaceNewLine,
-        md_inside: s.md_inside
-      };
-    },
-
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.sol()) {
         if (stream.match(/^\s*$/, true)) {
           state.prevLineHasContent = false;

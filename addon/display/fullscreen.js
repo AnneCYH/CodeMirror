@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.defineOption("fullScreen", false, function(cm, val, old) {
+  CodeMirror.defineOption("fullScreen", false, (cm, val, old) => {
     if (old == CodeMirror.Init) old = false;
     if (!old == !val) return;
     if (val) setFullscreen(cm);

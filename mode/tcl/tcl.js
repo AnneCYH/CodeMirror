@@ -1,5 +1,5 @@
 //tcl mode by Ford_Lawnmower :: Based on Velocity mode by Steve O'Hara
-CodeMirror.defineMode("tcl", function() {
+CodeMirror.defineMode("tcl", () => {
   function parseWords(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -76,7 +76,7 @@ CodeMirror.defineMode("tcl", function() {
       }
     }
     function tokenString(quote) {
-      return function(stream, state) {
+      return (stream, state) => {
       var escaped = false, next, end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {
@@ -115,14 +115,12 @@ CodeMirror.defineMode("tcl", function() {
       return "meta";
     }
     return {
-      startState: function() {
-        return {
-          tokenize: tokenBase,
-          beforeParams: false,
-          inParams: false
-        };
-      },
-      token: function(stream, state) {
+      startState: () => ({
+        tokenize: tokenBase,
+        beforeParams: false,
+        inParams: false
+      }),
+      token: (stream, state) => {
         if (stream.eatSpace()) return null;
         return state.tokenize(stream, state);
       }

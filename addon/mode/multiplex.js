@@ -10,23 +10,19 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
   }
 
   return {
-    startState: function() {
-      return {
-        outer: CodeMirror.startState(outer),
-        innerActive: null,
-        inner: null
-      };
-    },
+    startState: () => ({
+      outer: CodeMirror.startState(outer),
+      innerActive: null,
+      inner: null
+    }),
 
-    copyState: function(state) {
-      return {
-        outer: CodeMirror.copyState(outer, state.outer),
-        innerActive: state.innerActive,
-        inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner)
-      };
-    },
+    copyState: state => ({
+      outer: CodeMirror.copyState(outer, state.outer),
+      innerActive: state.innerActive,
+      inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner)
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (!state.innerActive) {
         var cutOff = Infinity, oldContent = stream.string;
         for (var i = 0; i < n_others; ++i) {
@@ -68,13 +64,13 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       }
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       var mode = state.innerActive ? state.innerActive.mode : outer;
       if (!mode.indent) return CodeMirror.Pass;
       return mode.indent(state.innerActive ? state.inner : state.outer, textAfter);
     },
 
-    blankLine: function(state) {
+    blankLine: state => {
       var mode = state.innerActive ? state.innerActive.mode : outer;
       if (mode.blankLine) {
         mode.blankLine(state.innerActive ? state.inner : state.outer);
@@ -94,8 +90,6 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 
     electricChars: outer.electricChars,
 
-    innerMode: function(state) {
-      return state.inner ? {state: state.inner, mode: state.innerActive.mode} : {state: state.outer, mode: outer};
-    }
+    innerMode: state => state.inner ? {state: state.inner, mode: state.innerActive.mode} : {state: state.outer, mode: outer}
   };
 };

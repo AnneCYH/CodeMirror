@@ -1,4 +1,4 @@
-CodeMirror.defineMode("q",function(config){
+CodeMirror.defineMode("q",config => {
   var indentUnit=config.indentUnit,
       curPunc,
       keywords=buildRE(["abs","acos","aj","aj0","all","and","any","asc","asin","asof","atan","attr","avg","avgs","bin","by","ceiling","cols","cor","cos","count","cov","cross","csv","cut","delete","deltas","desc","dev","differ","distinct","div","do","each","ej","enlist","eval","except","exec","exit","exp","fby","fills","first","fkeys","flip","floor","from","get","getenv","group","gtime","hclose","hcount","hdel","hopen","hsym","iasc","idesc","if","ij","in","insert","inter","inv","key","keys","last","like","list","lj","load","log","lower","lsq","ltime","ltrim","mavg","max","maxs","mcount","md5","mdev","med","meta","min","mins","mmax","mmin","mmu","mod","msum","neg","next","not","null","or","over","parse","peach","pj","plist","prd","prds","prev","prior","rand","rank","ratios","raze","read0","read1","reciprocal","reverse","rload","rotate","rsave","rtrim","save","scan","select","set","setenv","show","signum","sin","sqrt","ss","ssr","string","sublist","sum","sums","sv","system","tables","tan","til","trim","txf","type","uj","ungroup","union","update","upper","upsert","value","var","view","views","vs","wavg","where","where","while","within","wj","wj1","wsum","xasc","xbar","xcol","xcols","xdesc","xexp","xgroup","xkey","xlog","xprev","xrank"]),
@@ -68,14 +68,14 @@ CodeMirror.defineMode("q",function(config){
   }
   function pushContext(state,type,col){state.context={prev:state.context,indent:state.indent,col:col,type:type};}
   function popContext(state){state.indent=state.context.indent;state.context=state.context.prev;}
-  return{
-    startState:function(){
-      return{tokenize:tokenBase,
-             context:null,
-             indent:0,
-             col:0};
-    },
-    token:function(stream,state){
+  return {
+    startState:() => ({
+      tokenize:tokenBase,
+      context:null,
+      indent:0,
+      col:0
+    }),
+    token:(stream, state) => {
       if(stream.sol()){
         if(state.context&&state.context.align==null)
           state.context.align=false;
@@ -104,7 +104,7 @@ CodeMirror.defineMode("q",function(config){
       }
       return style;
     },
-    indent:function(state,textAfter){
+    indent:(state, textAfter) => {
       var firstChar=textAfter&&textAfter.charAt(0);
       var context=state.context;
       if(/[\]\}]/.test(firstChar))

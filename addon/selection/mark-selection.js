@@ -7,7 +7,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.defineOption("styleSelectedText", false, function(cm, val, old) {
+  CodeMirror.defineOption("styleSelectedText", false, (cm, val, old) => {
     var prev = old && old != CodeMirror.Init;
     if (val && !prev) {
       cm.state.markedSelection = [];
@@ -24,12 +24,12 @@
   });
 
   function onCursorActivity(cm) {
-    cm.operation(function() { update(cm); });
+    cm.operation(() => { update(cm); });
   }
 
   function onChange(cm) {
     if (cm.state.markedSelection.length)
-      cm.operation(function() { clear(cm); });
+      cm.operation(() => { clear(cm); });
   }
 
   var CHUNK_SIZE = 8;
