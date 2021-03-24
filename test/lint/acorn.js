@@ -28,7 +28,7 @@
 
   var options, input, inputLen, sourceFile;
 
-  exports.parse = function(inpt, opts) {
+  exports.parse = (inpt, opts) => {
     input = String(inpt); inputLen = input.length;
     options = opts || {};
     for (var opt in defaultOptions) if (!options.hasOwnProperty(opt))
@@ -93,7 +93,7 @@
   // offset. `input` should be the code string that the offset refers
   // into.
 
-  var getLineInfo = exports.getLineInfo = function(input, offset) {
+  var getLineInfo = exports.getLineInfo = (input, offset) => {
     for (var line = 1, cur = 0;;) {
       lineBreak.lastIndex = cur;
       var match = lineBreak.exec(input);
@@ -301,7 +301,7 @@
     // switch first dispatches on the lengths, to save on comparisons.
 
     if (cats.length > 3) {
-      cats.sort(function(a, b) {return b.length - a.length;});
+      cats.sort((a, b) => b.length - a.length);
       f += "switch(str.length){";
       for (var i = 0; i < cats.length; ++i) {
         var cat = cats[i];

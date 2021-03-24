@@ -1,10 +1,10 @@
-CodeMirror.defineMode("yaml", function() {
+CodeMirror.defineMode("yaml", () => {
 
   var cons = ['true', 'false', 'on', 'off', 'yes', 'no'];
   var keywordRegex = new RegExp("\\b(("+cons.join(")|(")+"))$", 'i');
 
   return {
-    token: function(stream, state) {
+    token: (stream, state) => {
       var ch = stream.peek();
       var esc = state.escaped;
       state.escaped = false;
@@ -80,17 +80,15 @@ CodeMirror.defineMode("yaml", function() {
       stream.next();
       return null;
     },
-    startState: function() {
-      return {
-        pair: false,
-        pairStart: false,
-        keyCol: 0,
-        inlinePairs: 0,
-        inlineList: 0,
-        literal: false,
-        escaped: false
-      };
-    }
+    startState: () => ({
+      pair: false,
+      pairStart: false,
+      keyCol: 0,
+      inlinePairs: 0,
+      inlineList: 0,
+      literal: false,
+      escaped: false
+    })
   };
 });
 

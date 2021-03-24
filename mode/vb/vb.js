@@ -1,4 +1,4 @@
-CodeMirror.defineMode("vb", function(conf, parserConf) {
+CodeMirror.defineMode("vb", (conf, parserConf) => {
     var ERRORCLASS = 'error';
 
     function wordRegexp(words) {
@@ -159,7 +159,7 @@ CodeMirror.defineMode("vb", function(conf, parserConf) {
         var singleline = delimiter.length == 1;
         var OUTCLASS = 'string';
 
-        return function(stream, state) {
+        return (stream, state) => {
             while (!stream.eol()) {
                 stream.eatWhile(/[^'"]/);
                 if (stream.match(delimiter)) {
@@ -218,19 +218,15 @@ CodeMirror.defineMode("vb", function(conf, parserConf) {
 
     var external = {
         electricChars:"dDpPtTfFeE ",
-        startState: function() {
-            return {
-              tokenize: tokenBase,
-              lastToken: null,
-              currentIndent: 0,
-              nextLineIndent: 0,
-              doInCurrentLine: false
+        startState: () => ({
+            tokenize: tokenBase,
+            lastToken: null,
+            currentIndent: 0,
+            nextLineIndent: 0,
+            doInCurrentLine: false
+        }),
 
-
-          };
-        },
-
-        token: function(stream, state) {
+        token: (stream, state) => {
             if (stream.sol()) {
               state.currentIndent += state.nextLineIndent;
               state.nextLineIndent = 0;
@@ -245,7 +241,7 @@ CodeMirror.defineMode("vb", function(conf, parserConf) {
             return style;
         },
 
-        indent: function(state, textAfter) {
+        indent: (state, textAfter) => {
             var trueText = textAfter.replace(/^\s+|\s+$/g, '') ;
             if (trueText.match(closing) || trueText.match(doubleClosing) || trueText.match(middle)) return conf.indentUnit*(state.currentIndent-1);
             if(state.currentIndent < 0) return 0;

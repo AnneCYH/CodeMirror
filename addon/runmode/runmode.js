@@ -1,4 +1,4 @@
-CodeMirror.runMode = function(string, modespec, callback, options) {
+CodeMirror.runMode = (string, modespec, callback, options) => {
   var mode = CodeMirror.getMode(CodeMirror.defaults, modespec);
   var ie = /MSIE \d/.test(navigator.userAgent);
   var ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9);
@@ -7,7 +7,7 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
     var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
     var node = callback, col = 0;
     node.innerHTML = "";
-    callback = function(text, style) {
+    callback = (text, style) => {
       if (text == "\n") {
         // Emitting LF or CRLF on IE8 or earlier results in an incorrect display.
         // Emitting a carriage return makes everything ok.

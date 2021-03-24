@@ -2,10 +2,10 @@
  * Link to the project's GitHub page:
  * https://github.com/duralog/CodeMirror
  */
-(function() {
-  CodeMirror.defineMode('livescript', function(){
+((() => {
+  CodeMirror.defineMode('livescript', () => {
     var tokenBase, external;
-    tokenBase = function(stream, state){
+    tokenBase = (stream, state) => {
       var next_rule, nr, i$, len$, r, m;
       if (next_rule = state.next || 'start') {
         state.next = state.next;
@@ -34,13 +34,11 @@
       return 'error';
     };
     external = {
-      startState: function(){
-        return {
-          next: 'start',
-          lastToken: null
-        };
-      },
-      token: function(stream, state){
+      startState: () => ({
+        next: 'start',
+        lastToken: null
+      }),
+      token: (stream, state) => {
         var style;
         style = tokenBase(stream, state);
         state.lastToken = {
@@ -50,7 +48,7 @@
         };
         return style.replace(/\./g, ' ');
       },
-      indent: function(state){
+      indent: state => {
         var indentation;
         indentation = state.lastToken.indent;
         if (state.lastToken.content.match(indenter)) {
@@ -262,6 +260,6 @@
       Rules[idx].regex = new RegExp('^' + r.regex);
     }
   }
-})();
+}))();
 
 CodeMirror.defineMIME('text/x-livescript', 'livescript');

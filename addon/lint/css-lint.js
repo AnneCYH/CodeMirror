@@ -1,6 +1,6 @@
 // Depends on csslint.js from https://github.com/stubbornella/csslint
 
-CodeMirror.registerHelper("lint", "css", function(text) {
+CodeMirror.registerHelper("lint", "css", text => {
   var found = [];
   var results = CSSLint.verify(text), messages = results.messages, message = null;
   for ( var i = 0; i < messages.length; i++) {

@@ -3,7 +3,7 @@
 // verification. If a change you made causes them to fail, the test is
 // as likely to wrong as the code.
 
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4}, "xquery");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -61,4 +61,4 @@
   MT("testQuoteEscapeDouble",
      "[keyword let] [variable $rootfolder] [keyword :=] [string \"c:\\builds\\winnt\\HEAD\\qa\\scripts\\\"]",
      "[keyword let] [variable $keysfolder] [keyword :=] [def&variable concat]([variable $rootfolder], [string \"keys\\\"])");
-})();
+}))();

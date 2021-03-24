@@ -2,7 +2,7 @@
  * Author: Hans Engel
  * Branched from CodeMirror's Scheme mode (by Koh Zi Han, based on implementation by Koh Zi Chun)
  */
-CodeMirror.defineMode("clojure", function () {
+CodeMirror.defineMode("clojure", () => {
     var BUILTIN = "builtin", COMMENT = "comment", STRING = "string", CHARACTER = "string-2",
         ATOM = "atom", NUMBER = "number", BRACKET = "bracket", KEYWORD = "keyword";
     var INDENT_WORD_SKIP = 2;
@@ -109,15 +109,13 @@ CodeMirror.defineMode("clojure", function () {
     }
 
     return {
-        startState: function () {
-            return {
-                indentStack: null,
-                indentation: 0,
-                mode: false
-            };
-        },
+        startState: () => ({
+            indentStack: null,
+            indentation: 0,
+            mode: false
+        }),
 
-        token: function (stream, state) {
+        token: (stream, state) => {
             if (state.indentStack == null && stream.sol()) {
                 // update indentation, but only if indentStack is empty
                 state.indentation = stream.indentation();
@@ -212,7 +210,7 @@ CodeMirror.defineMode("clojure", function () {
             return returnType;
         },
 
-        indent: function (state) {
+        indent: state => {
             if (state.indentStack == null) return state.indentation;
             return state.indentStack.indent;
         },

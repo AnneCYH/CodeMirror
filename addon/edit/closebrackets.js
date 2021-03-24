@@ -1,9 +1,9 @@
-(function() {
+((() => {
   var DEFAULT_BRACKETS = "()[]{}''\"\"";
   var DEFAULT_EXPLODE_ON_ENTER = "[]{}";
   var SPACE_CHAR_REGEX = /\s/;
 
-  CodeMirror.defineOption("autoCloseBrackets", false, function(cm, val, old) {
+  CodeMirror.defineOption("autoCloseBrackets", false, (cm, val, old) => {
     if (old != CodeMirror.Init && old)
       cm.removeKeyMap("autoCloseBrackets");
     if (!val) return;
@@ -27,7 +27,7 @@
   function buildKeymap(pairs) {
     var map = {
       name : "autoCloseBrackets",
-      Backspace: function(cm) {
+      Backspace: cm => {
         if (cm.somethingSelected()) return CodeMirror.Pass;
         var cur = cm.getCursor(), around = charsAround(cm, cur);
         if (around && pairs.indexOf(around) % 2 == 0)
@@ -37,7 +37,7 @@
       }
     };
     var closingBrackets = "";
-    for (var i = 0; i < pairs.length; i += 2) (function(left, right) {
+    for (var i = 0; i < pairs.length; i += 2) (((left, right) => {
       if (left != right) closingBrackets += right;
       function surround(cm) {
         var selection = cm.getSelection();
@@ -48,7 +48,7 @@
         if (ahead != right || cm.somethingSelected()) return CodeMirror.Pass;
         else cm.execCommand("goCharRight");
       }
-      map["'" + left + "'"] = function(cm) {
+      map["'" + left + "'"] = cm => {
         if (left == "'" && cm.getTokenAt(cm.getCursor()).type == "comment")
           return CodeMirror.Pass;
         if (cm.somethingSelected()) return surround(cm);
@@ -63,15 +63,15 @@
           return CodeMirror.Pass;
       };
       if (left != right) map["'" + right + "'"] = maybeOverwrite;
-    })(pairs.charAt(i), pairs.charAt(i + 1));
+    }))(pairs.charAt(i), pairs.charAt(i + 1));
     return map;
   }
 
   function buildExplodeHandler(pairs) {
-    return function(cm) {
+    return cm => {
       var cur = cm.getCursor(), around = charsAround(cm, cur);
       if (!around || pairs.indexOf(around) % 2 != 0) return CodeMirror.Pass;
-      cm.operation(function() {
+      cm.operation(() => {
         var newPos = CodeMirror.Pos(cur.line + 1, 0);
         cm.replaceSelection("\n\n", {anchor: newPos, head: newPos}, "+input");
         cm.indentLine(cur.line + 1, null, true);
@@ -79,4 +79,4 @@
       });
     };
   }
-})();
+}))();

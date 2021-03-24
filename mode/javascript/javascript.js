@@ -1,6 +1,6 @@
 // TODO actually recognize syntax of TypeScript constructs
 
-CodeMirror.defineMode("javascript", function(config, parserConfig) {
+CodeMirror.defineMode("javascript", (config, parserConfig) => {
   var indentUnit = config.indentUnit;
   var statementIndent = parserConfig.statementIndent;
   var jsonMode = parserConfig.json;
@@ -8,7 +8,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
 
   // Tokenizer
 
-  var keywords = function(){
+  var keywords = (() => {
     function kw(type) {return {type: type, style: "keyword"};}
     var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c");
     var operator = kw("operator"), atom = {type: "atom", style: "atom"};
@@ -52,7 +52,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     }
 
     return jsKeywords;
-  }();
+  })();
 
   var isOperatorChar = /[+\-*&%=<>!?|~^]/;
 
@@ -130,7 +130,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   }
 
   function jsTokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (!nextUntilUnescaped(stream, quote))
         state.tokenize = jsTokenBase;
       return ret("string", "string");
@@ -227,7 +227,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     cx.state.context = cx.state.context.prev;
   }
   function pushlex(type, info) {
-    var result = function() {
+    var result = () => {
       var state = cx.state, indent = state.indented;
       if (state.lexical.type == "stat") indent = state.lexical.indented;
       state.lexical = new JSLexical(indent, cx.stream.column(), type, null, state.lexical, info);
@@ -347,7 +347,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       if (type == end) return cont();
       return cont(expect(end));
     }
-    return function(type) {
+    return type => {
       if (type == end) return cont();
       else return pass(what, proceed);
     };
@@ -407,20 +407,18 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   // Interface
 
   return {
-    startState: function(basecolumn) {
-      return {
-        tokenize: jsTokenBase,
-        lastType: null,
-        cc: [],
-        lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
-        localVars: parserConfig.localVars,
-        globalVars: parserConfig.globalVars,
-        context: parserConfig.localVars && {vars: parserConfig.localVars},
-        indented: 0
-      };
-    },
+    startState: basecolumn => ({
+      tokenize: jsTokenBase,
+      lastType: null,
+      cc: [],
+      lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
+      localVars: parserConfig.localVars,
+      globalVars: parserConfig.globalVars,
+      context: parserConfig.localVars && {vars: parserConfig.localVars},
+      indented: 0
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.sol()) {
         if (!state.lexical.hasOwnProperty("align"))
           state.lexical.align = false;
@@ -433,7 +431,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return parseJS(state, style, type, content, stream);
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize == jsTokenComment) return CodeMirror.Pass;
       if (state.tokenize != jsTokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical;

@@ -1,25 +1,21 @@
-CodeMirror.defineMode("gfm", function(config) {
+CodeMirror.defineMode("gfm", config => {
   var codeDepth = 0;
   function blankLine(state) {
     state.code = false;
     return null;
   }
   var gfmOverlay = {
-    startState: function() {
-      return {
-        code: false,
-        codeBlock: false,
-        ateSpace: false
-      };
-    },
-    copyState: function(s) {
-      return {
-        code: s.code,
-        codeBlock: s.codeBlock,
-        ateSpace: s.ateSpace
-      };
-    },
-    token: function(stream, state) {
+    startState: () => ({
+      code: false,
+      codeBlock: false,
+      ateSpace: false
+    }),
+    copyState: s => ({
+      code: s.code,
+      codeBlock: s.codeBlock,
+      ateSpace: s.ateSpace
+    }),
+    token: (stream, state) => {
       // Hack to prevent formatting override inside code blocks (block and inline)
       if (state.codeBlock) {
         if (stream.match(/^```/)) {

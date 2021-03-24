@@ -4,7 +4,7 @@
   var listRE = /^(\s*)([*+-]|(\d+)\.)(\s*)/,
       unorderedBullets = '*+-';
 
-  CodeMirror.commands.newlineAndIndentContinueMarkdownList = function(cm) {
+  CodeMirror.commands.newlineAndIndentContinueMarkdownList = cm => {
     var pos = cm.getCursor(),
         inList = cm.getStateAfter(pos.line).list,
         match;

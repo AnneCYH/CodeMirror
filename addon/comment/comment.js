@@ -10,7 +10,7 @@
     return found == -1 ? 0 : found;
   }
 
-  CodeMirror.commands.toggleComment = function(cm) {
+  CodeMirror.commands.toggleComment = cm => {
     var from = cm.getCursor("start"), to = cm.getCursor("end");
     cm.uncomment(from, to) || cm.lineComment(from, to);
   };
@@ -32,7 +32,7 @@
     var pad = options.padding == null ? " " : options.padding;
     var blankLines = options.commentBlankLines || from.line == to.line;
 
-    self.operation(function() {
+    self.operation(() => {
       if (options.indent) {
         var baseString = firstLine.slice(0, firstNonWS(firstLine));
         for (var i = from.line; i < end; ++i) {
@@ -67,7 +67,7 @@
     var pad = options.padding == null ? " " : options.padding;
     if (from.line > end) return;
 
-    self.operation(function() {
+    self.operation(() => {
       if (options.fullLines != false) {
         var lastLineHasText = nonWS.test(self.getLine(end));
         self.replaceRange(pad + endString, Pos(end));
@@ -100,7 +100,7 @@
         if (i != start && found > -1 && nonWS.test(line.slice(0, found))) break lineComment;
         lines.push(line);
       }
-      self.operation(function() {
+      self.operation(() => {
         for (var i = start; i <= end; ++i) {
           var line = lines[i - start];
           var pos = line.indexOf(lineString), endPos = pos + lineString.length;
@@ -126,7 +126,7 @@
     }
     if (open == -1 || close == -1) return false;
 
-    self.operation(function() {
+    self.operation(() => {
       self.replaceRange("", Pos(end, close - (pad && endLine.slice(close - pad.length, close) == pad ? pad.length : 0)),
                         Pos(end, close + endString.length));
       var openEnd = open + startString.length;

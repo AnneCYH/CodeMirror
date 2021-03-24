@@ -1,4 +1,4 @@
-CodeMirror.defineMode("haskell", function(_config, modeConfig) {
+CodeMirror.defineMode("haskell", (_config, modeConfig) => {
 
   function switchState(source, setState, f) {
     setState(f);
@@ -111,7 +111,7 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
     if (nest == 0) {
       return normal;
     }
-    return function(source, setState) {
+    return (source, setState) => {
       var currNest = nest;
       while (!source.eol()) {
         var ch = source.next();
@@ -164,7 +164,7 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
   }
 
 
-  var wellKnownWords = (function() {
+  var wellKnownWords = ((() => {
     var wkw = {};
     function setType(t) {
       return function () {
@@ -226,16 +226,20 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
       wkw[word] = override[word];
 
     return wkw;
-  })();
+  }))();
 
 
 
   return {
-    startState: function ()  { return { f: normal }; },
-    copyState:  function (s) { return { f: s.f }; },
+    startState: () => ({
+      f: normal
+    }),
+    copyState:  s => ({
+      f: s.f
+    }),
 
-    token: function(stream, state) {
-      var t = state.f(stream, function(s) { state.f = s; });
+    token: (stream, state) => {
+      var t = state.f(stream, s => { state.f = s; });
       var w = stream.current();
       return (w in wellKnownWords) ? wellKnownWords[w] : t;
     },

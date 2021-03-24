@@ -88,10 +88,10 @@
   }
 
   function registerScroll(dv) {
-    dv.edit.on("scroll", function() {
+    dv.edit.on("scroll", () => {
       syncScroll(dv, DIFF_INSERT) && drawConnectors(dv);
     });
-    dv.orig.on("scroll", function() {
+    dv.orig.on("scroll", () => {
       syncScroll(dv, DIFF_DELETE) && drawConnectors(dv);
     });
   }
@@ -165,7 +165,7 @@
   // FIXME maybe add a margin around viewport to prevent too many updates
   function updateMarks(editor, diff, state, type, classes) {
     var vp = editor.getViewport();
-    editor.operation(function() {
+    editor.operation(() => {
       if (state.from == state.to || vp.from - state.to > 20 || state.from - vp.to > 20) {
         clearMarks(editor, state.marked, classes);
         markChanges(editor, diff, type, state.marked, vp.from, vp.to, classes);
@@ -243,7 +243,7 @@
     var flip = dv.type == "left";
     var vpEdit = dv.edit.getViewport(), vpOrig = dv.orig.getViewport();
     var sTopEdit = dv.edit.getScrollInfo().top, sTopOrig = dv.orig.getScrollInfo().top;
-    iterateChunks(dv.diff, function(topOrig, botOrig, topEdit, botEdit) {
+    iterateChunks(dv.diff, (topOrig, botOrig, topEdit, botEdit) => {
       if (topEdit > vpEdit.to || botEdit < vpEdit.from ||
           topOrig > vpOrig.to || botOrig < vpOrig.from)
         return;
@@ -310,12 +310,12 @@
     if (left) left.init(leftPane, origLeft, options);
     if (right) right.init(rightPane, origRight, options);
 
-    var onResize = function() {
+    var onResize = () => {
       if (left) drawConnectors(left);
       if (right) drawConnectors(right);
     };
     CodeMirror.on(window, "resize", onResize);
-    var resizeInterval = setInterval(function() {
+    var resizeInterval = setInterval(() => {
       for (var p = wrapElt.parentNode; p && p != document.body; p = p.parentNode) {}
       if (!p) { clearInterval(resizeInterval); CodeMirror.off(window, "resize", onResize); }
     }, 5000);
@@ -325,9 +325,9 @@
     var lock = dv.lockButton = elt("div", null, "CodeMirror-merge-scrolllock");
     lock.title = "Toggle locked scrolling";
     var lockWrap = elt("div", [lock], "CodeMirror-merge-scrolllock-wrap");
-    CodeMirror.on(lock, "click", function() { setScrollLock(dv, !dv.lockScroll); });
+    CodeMirror.on(lock, "click", () => { setScrollLock(dv, !dv.lockScroll); });
     dv.copyButtons = elt("div", null, "CodeMirror-merge-copybuttons-" + dv.type);
-    CodeMirror.on(dv.copyButtons, "click", function(e) {
+    CodeMirror.on(dv.copyButtons, "click", e => {
       var node = e.target || e.srcElement;
       if (node.chunk) copyChunk(dv, node.chunk);
     });
@@ -413,7 +413,7 @@
 
   function chunkBoundariesAround(diff, n, nInEdit) {
     var beforeE, afterE, beforeO, afterO;
-    iterateChunks(diff, function(fromOrig, toOrig, fromEdit, toEdit) {
+    iterateChunks(diff, (fromOrig, toOrig, fromEdit, toEdit) => {
       var fromLocal = nInEdit ? fromEdit : fromOrig;
       var toLocal = nInEdit ? toEdit : toOrig;
       if (afterE == null) {

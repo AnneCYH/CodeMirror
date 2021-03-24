@@ -20,12 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-CodeMirror.defineMode("xquery", function() {
+CodeMirror.defineMode("xquery", () => {
 
   // The keywords object is set to the result of this self executing
   // function. Each keyword is a property of the keywords object whose
   // value is {type: atype, style: astyle}
-  var keywords = function(){
+  var keywords = (() => {
     // conveinence functions used to build keywords object
     function kw(type) {return {type: type, style: "keyword"};}
     var A = kw("keyword a")
@@ -75,7 +75,7 @@ CodeMirror.defineMode("xquery", function() {
     for(var i=0, l=axis_specifiers.length; i < l; i++) { kwObj[axis_specifiers[i]] = qualifier; };
 
     return kwObj;
-  }();
+  })();
 
   // Used as scratch variables to communicate multiple values without
   // consing up tons of objects.
@@ -250,7 +250,7 @@ CodeMirror.defineMode("xquery", function() {
   // tokenizer for string literals
   // optionally pass a tokenizer function to set state.tokenize back to when finished
   function tokenString(quote, f) {
-    return function(stream, state) {
+    return (stream, state) => {
       var ch;
 
       if(isInString(state) && stream.current() == quote) {
@@ -307,7 +307,7 @@ CodeMirror.defineMode("xquery", function() {
 
   // tokenizer for XML tags
   function tokenTag(name, isclose) {
-    return function(stream, state) {
+    return (stream, state) => {
       stream.eatSpace();
       if(isclose && stream.eat(">")) {
         popStateStack(state);
@@ -430,15 +430,13 @@ CodeMirror.defineMode("xquery", function() {
 
   // the interface for the mode API
   return {
-    startState: function() {
-      return {
-        tokenize: tokenBase,
-        cc: [],
-        stack: []
-      };
-    },
+    startState: () => ({
+      tokenize: tokenBase,
+      cc: [],
+      stack: []
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
       return style;

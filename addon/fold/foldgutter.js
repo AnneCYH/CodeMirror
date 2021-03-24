@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.defineOption("foldGutter", false, function(cm, val, old) {
+  CodeMirror.defineOption("foldGutter", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init) {
       cm.clearGutter(cm.state.foldGutter.options.gutter);
       cm.state.foldGutter = null;
@@ -55,7 +55,7 @@
 
   function updateFoldInfo(cm, from, to) {
     var opts = cm.state.foldGutter.options, cur = from;
-    cm.eachLine(from, to, function(line) {
+    cm.eachLine(from, to, line => {
       var mark = null;
       if (isFolded(cm, cur)) {
         mark = marker(opts.indicatorFolded);
@@ -73,7 +73,7 @@
   function updateInViewport(cm) {
     var vp = cm.getViewport(), state = cm.state.foldGutter;
     if (!state) return;
-    cm.operation(function() {
+    cm.operation(() => {
       updateFoldInfo(cm, vp.from, vp.to);
     });
     state.from = vp.from; state.to = vp.to;
@@ -89,18 +89,18 @@
     var state = cm.state.foldGutter;
     state.from = state.to = 0;
     clearTimeout(state.changeUpdate);
-    state.changeUpdate = setTimeout(function() { updateInViewport(cm); }, 600);
+    state.changeUpdate = setTimeout(() => { updateInViewport(cm); }, 600);
   }
 
   function onViewportChange(cm) {
     var state = cm.state.foldGutter;
     clearTimeout(state.changeUpdate);
-    state.changeUpdate = setTimeout(function() {
+    state.changeUpdate = setTimeout(() => {
       var vp = cm.getViewport();
       if (state.from == state.to || vp.from - state.to > 20 || state.from - vp.to > 20) {
         updateInViewport(cm);
       } else {
-        cm.operation(function() {
+        cm.operation(() => {
           if (vp.from < state.from) {
             updateFoldInfo(cm, vp.from, state.from);
             state.from = vp.from;

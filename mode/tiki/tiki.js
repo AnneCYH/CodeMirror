@@ -1,6 +1,6 @@
-CodeMirror.defineMode('tiki', function(config) {
+CodeMirror.defineMode('tiki', config => {
   function inBlock(style, terminator, returnTokenizer) {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         if (stream.match(terminator)) {
           state.tokenize = inText;
@@ -16,7 +16,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inLine(style) {
-    return function(stream, state) {
+    return (stream, state) => {
       while(!stream.eol()) {
         stream.next();
       }
@@ -163,7 +163,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inAttribute(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         if (stream.next() == quote) {
           state.tokenize = inPlugin;
@@ -175,7 +175,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inAttributeNoQuote() {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         var ch = stream.next();
         var peek = stream.peek();
@@ -235,7 +235,7 @@ function element(type) {
 }
 
 function endplugin(startOfLine) {
-  return function(type) {
+  return type => {
     if (
       type == "selfclosePlugin" ||
         type == "endPlugin"
@@ -247,7 +247,7 @@ function endplugin(startOfLine) {
 }
 
 function endcloseplugin(err) {
-  return function(type) {
+  return type => {
     if (err) setStyle = "error";
     if (type == "endPlugin") return cont();
     return pass();
@@ -269,10 +269,15 @@ function attvaluemaybe(type) {
   else return pass();
 }
 return {
-  startState: function() {
-    return {tokenize: inText, cc: [], indented: 0, startOfLine: true, pluginName: null, context: null};
-  },
-  token: function(stream, state) {
+  startState: () => ({
+    tokenize: inText,
+    cc: [],
+    indented: 0,
+    startOfLine: true,
+    pluginName: null,
+    context: null
+  }),
+  token: (stream, state) => {
     if (stream.sol()) {
       state.startOfLine = true;
       state.indented = stream.indentation();
@@ -291,7 +296,7 @@ return {
     state.startOfLine = false;
     return setStyle || style;
   },
-  indent: function(state, textAfter) {
+  indent: (state, textAfter) => {
     var context = state.context;
     if (context && context.noIndent) return 0;
     if (context && /^{\//.test(textAfter))

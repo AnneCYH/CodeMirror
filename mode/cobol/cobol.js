@@ -2,7 +2,7 @@
  * Author: Gautam Mehta
  * Branched from CodeMirror's Scheme mode
  */
-CodeMirror.defineMode("cobol", function () {
+CodeMirror.defineMode("cobol", () => {
   var BUILTIN = "builtin", COMMENT = "comment", STRING = "string",
       ATOM = "atom", NUMBER = "number", KEYWORD = "keyword", MODTAG = "header",
       COBOLLINENUM = "def", PERIOD = "link";
@@ -161,14 +161,12 @@ CodeMirror.defineMode("cobol", function () {
     return false;
   }
   return {
-    startState: function () {
-      return {
-        indentStack: null,
-        indentation: 0,
-        mode: false
-      };
-    },
-    token: function (stream, state) {
+    startState: () => ({
+      indentStack: null,
+      indentation: 0,
+      mode: false
+    }),
+    token: (stream, state) => {
       if (state.indentStack == null && stream.sol()) {
         // update indentation, but only if indentStack is empty
         state.indentation = 6 ; //stream.indentation();
@@ -230,7 +228,7 @@ CodeMirror.defineMode("cobol", function () {
       }
       return returnType;
     },
-    indent: function (state) {
+    indent: state => {
       if (state.indentStack == null) return state.indentation;
       return state.indentStack.indent;
     }

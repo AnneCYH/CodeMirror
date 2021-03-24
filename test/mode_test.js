@@ -18,7 +18,7 @@
  * See the test.js files in the css, markdown, gfm, and stex mode
  * directories for examples.
  */
-(function() {
+((() => {
   function findSingle(str, pos, ch) {
     for (;;) {
       var found = str.indexOf(ch, pos);
@@ -51,7 +51,7 @@
           text = str.slice(pos, end);
           pos = end;
         }
-        text = text.replace(/\[\[|\]\]/g, function(s) {return s.charAt(0);});
+        text = text.replace(/\[\[|\]\]/g, s => s.charAt(0));
         tokens.push(style, text);
         plain += text;
       }
@@ -59,11 +59,9 @@
     return {tokens: tokens, plain: plain};
   }
 
-  test.mode = function(name, mode, tokens, modeName) {
+  test.mode = (name, mode, tokens, modeName) => {
     var data = parseTokens(tokens);
-    return test((modeName || mode.name) + "_" + name, function() {
-      return compare(data.plain, data.tokens, mode);
-    });
+    return test((modeName || mode.name) + "_" + name, () => compare(data.plain, data.tokens, mode));
   };
 
   function compare(text, expected, mode) {
@@ -189,4 +187,4 @@
     s += '</table>';
     return s;
   }
-})();
+}))();

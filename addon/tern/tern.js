@@ -52,14 +52,14 @@
       this.server = new WorkerServer(this);
     } else {
       this.server = new tern.Server({
-        getFile: function(name, c) { return getFile(self, name, c); },
+        getFile: (name, c) => getFile(self, name, c),
         async: true,
         defs: this.options.defs || [],
         plugins: plugins
       });
     }
     this.docs = Object.create(null);
-    this.trackChange = function(doc, change) { trackChange(self, doc, change); };
+    this.trackChange = (doc, change) => { trackChange(self, doc, change); };
 
     this.cachedArgHints = null;
     this.activeArgHints = null;
@@ -90,7 +90,7 @@
 
     complete: function(cm) {
       var self = this;
-      CodeMirror.showHint(cm, function(cm, c) { return hint(self, cm, c); }, {async: true});
+      CodeMirror.showHint(cm, (cm, c) => hint(self, cm, c), {async: true});
     },
 
     getHint: function(cm, c) { return hint(this, cm, c); },
@@ -110,7 +110,7 @@
       var doc = findDoc(this, cm.getDoc());
       var request = buildRequest(this, doc, query);
 
-      this.server.request(request, function (error, data) {
+      this.server.request(request, (error, data) => {
         if (!error && self.options.responseFilter)
           data = self.options.responseFilter(doc, query, request, error, data);
         c(error, data);
@@ -159,13 +159,13 @@
     if (end >= changed.to) changed.to = end + 1;
     if (changed.from > change.from.line) changed.from = change.from.line;
 
-    if (doc.lineCount() > bigDoc && change.to - changed.from > 100) setTimeout(function() {
+    if (doc.lineCount() > bigDoc && change.to - changed.from > 100) setTimeout(() => {
       if (data.changed && data.changed.to - data.changed.from > 100) sendDoc(ts, data);
     }, 200);
   }
 
   function sendDoc(ts, doc) {
-    ts.server.request({files: [{type: "full", name: doc.name, text: docValue(ts, doc)}]}, function(error) {
+    ts.server.request({files: [{type: "full", name: doc.name, text: docValue(ts, doc)}]}, error => {
       if (error) console.error(error);
       else doc.changed = null;
     });
@@ -174,7 +174,7 @@
   // Completion
 
   function hint(ts, cm, c) {
-    ts.request(cm, {type: "completions", types: true, docs: true, urls: true}, function(error, data) {
+    ts.request(cm, {type: "completions", types: true, docs: true, urls: true}, (error, data) => {
       if (error) return showError(ts, cm, error);
       var completions = [], after = "";
       var from = data.start, to = data.end;
@@ -193,9 +193,9 @@
 
       var obj = {from: from, to: to, list: completions};
       var tooltip = null;
-      CodeMirror.on(obj, "close", function() { remove(tooltip); });
-      CodeMirror.on(obj, "update", function() { remove(tooltip); });
-      CodeMirror.on(obj, "select", function(cur, node) {
+      CodeMirror.on(obj, "close", () => { remove(tooltip); });
+      CodeMirror.on(obj, "update", () => { remove(tooltip); });
+      CodeMirror.on(obj, "select", (cur, node) => {
         remove(tooltip);
         var content = ts.options.completionTip ? ts.options.completionTip(cur.data) : cur.data.doc;
         if (content) {
@@ -221,7 +221,7 @@
   // Type queries
 
   function showType(ts, cm) {
-    ts.request(cm, "type", function(error, data) {
+    ts.request(cm, "type", (error, data) => {
       if (error) return showError(ts, cm, error);
       if (ts.options.typeTip) {
         var tip = ts.options.typeTip(data);
@@ -269,7 +269,7 @@
     if (cache && cache.doc == cm.getDoc() && cmpPos(start, cache.start) == 0)
       return showArgHints(ts, cm, pos);
 
-    ts.request(cm, {type: "type", preferFunction: true, end: start}, function(error, data) {
+    ts.request(cm, {type: "type", preferFunction: true, end: start}, (error, data) => {
       if (error || !data.type || !(/^fn\(/).test(data.type)) return;
       ts.cachedArgHints = {
         start: pos,
@@ -340,7 +340,7 @@
     function inner(varName) {
       var req = {type: "definition", variable: varName || null};
       var doc = findDoc(ts, cm.getDoc());
-      ts.server.request(buildRequest(ts, doc, req), function(error, data) {
+      ts.server.request(buildRequest(ts, doc, req), (error, data) => {
         if (error) return showError(ts, cm, error);
         if (!data.file && data.url) { window.open(data.url); return; }
 
@@ -359,7 +359,7 @@
     }
 
     if (!atInterestingExpression(cm))
-      dialog(cm, "Jump to variable", function(name) { if (name) inner(name); });
+      dialog(cm, "Jump to variable", name => { if (name) inner(name); });
     else
       inner();
   }
@@ -420,8 +420,8 @@
   function rename(ts, cm) {
     var token = cm.getTokenAt(cm.getCursor());
     if (!/\w/.test(token.string)) showError(ts, cm, "Not at a variable");
-    dialog(cm, "New name for " + token.string, function(newName) {
-      ts.request(cm, {type: "rename", newName: newName, fullDocs: true}, function(error, data) {
+    dialog(cm, "New name for " + token.string, newName => {
+      ts.request(cm, {type: "rename", newName: newName, fullDocs: true}, (error, data) => {
         if (error) return showError(ts, cm, error);
         applyChanges(ts, data.changes);
       });
@@ -438,7 +438,7 @@
     for (var file in perFile) {
       var known = ts.docs[file], chs = perFile[file];;
       if (!known) continue;
-      chs.sort(function(a, b) { return cmpPos(b, a); });
+      chs.sort((a, b) => cmpPos(b, a));
       var origin = "*rename" + (++nextChangeOrig);
       for (var i = 0; i < chs.length; ++i) {
         var ch = chs[i];
@@ -569,7 +569,7 @@
 
   function fadeOut(tooltip) {
     tooltip.style.opacity = "0";
-    setTimeout(function() { remove(tooltip); }, 1100);
+    setTimeout(() => { remove(tooltip); }, 1100);
   }
 
   function showError(ts, cm, msg) {
@@ -606,10 +606,10 @@
       }
       worker.postMessage(data);
     }
-    worker.onmessage = function(e) {
+    worker.onmessage = e => {
       var data = e.data;
       if (data.type == "getFile") {
-        getFile(ts, name, function(err, text) {
+        getFile(ts, name, (err, text) => {
           send({type: "getFile", err: String(err), text: text, id: data.id});
         });
       } else if (data.type == "debug") {
@@ -619,13 +619,13 @@
         delete pending[data.id];
       }
     };
-    worker.onerror = function(e) {
+    worker.onerror = e => {
       for (var id in pending) pending[id](e);
       pending = {};
     };
 
-    this.addFile = function(name, text) { send({type: "add", name: name, text: text}); };
-    this.delFile = function(name) { send({type: "del", name: name}); };
-    this.request = function(body, c) { send({type: "req", body: body}, c); };
+    this.addFile = (name, text) => { send({type: "add", name: name, text: text}); };
+    this.delFile = name => { send({type: "del", name: name}); };
+    this.request = (body, c) => { send({type: "req", body: body}, c); };
   }
 })();

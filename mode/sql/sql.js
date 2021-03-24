@@ -105,7 +105,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
   // 'string', with char specified in quote escaped by '\'
   function tokenLiteral(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped) {
@@ -148,11 +148,12 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
   }
 
   return {
-    startState: function() {
-      return {tokenize: tokenBase, context: null};
-    },
+    startState: () => ({
+      tokenize: tokenBase,
+      context: null
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.sol()) {
         if (state.context && state.context.align == null)
           state.context.align = false;
@@ -175,7 +176,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       var cx = state.context;
       if (!cx) return CodeMirror.Pass;
       if (cx.align) return cx.col + (textAfter.charAt(0) == cx.type ? 0 : 1);

@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.defineOption("matchTags", false, function(cm, val, old) {
+  CodeMirror.defineOption("matchTags", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init) {
       cm.off("cursorActivity", doMatchTags);
       cm.off("viewportChange", maybeUpdateMatch);
@@ -23,7 +23,7 @@
 
   function doMatchTags(cm) {
     cm.state.failedTagMatch = false;
-    cm.operation(function() {
+    cm.operation(() => {
       clear(cm);
       if (cm.somethingSelected()) return;
       var cur = cm.getCursor(), range = cm.getViewport();
@@ -46,7 +46,7 @@
     if (cm.state.failedTagMatch) doMatchTags(cm);
   }
 
-  CodeMirror.commands.toMatchingTag = function(cm) {
+  CodeMirror.commands.toMatchingTag = cm => {
     var found = CodeMirror.findMatchingTag(cm, cm.getCursor());
     if (found) {
       var other = found.at == "close" ? found.open : found.close;

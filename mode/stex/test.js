@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4}, "stex");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -117,4 +117,4 @@
 
   MT("lineBreakArgument",
     "[tag \\\\][bracket [[][atom 1cm][bracket ]]]");
-})();
+}))();

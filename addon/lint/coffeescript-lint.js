@@ -1,8 +1,8 @@
 // Depends on coffeelint.js from http://www.coffeelint.org/js/coffeelint.js
 
-CodeMirror.registerHelper("lint", "coffeescript", function(text) {
+CodeMirror.registerHelper("lint", "coffeescript", text => {
   var found = [];
-  var parseError = function(err) {
+  var parseError = err => {
     var loc = err.lineNumber;
     found.push({from: CodeMirror.Pos(loc-1, 0),
                 to: CodeMirror.Pos(loc, 0),

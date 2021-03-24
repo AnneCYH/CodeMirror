@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4}, "text/x-scss");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1), "scss"); }
 
@@ -77,4 +77,4 @@
 
   MT('nested_structure_with_id_selector',
     "[tag p] { [builtin #hello] { [property color][operator :][keyword red]; } }");
-})();
+}))();

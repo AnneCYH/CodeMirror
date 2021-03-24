@@ -1,6 +1,6 @@
 // CodeMirror2 mode/perl/perl.js (text/x-perl) beta 0.10 (2011-11-08)
 // This is a part of CodeMirror from https://github.com/sabaca/CodeMirror_mode_perl (mail@sabaca.com)
-CodeMirror.defineMode("perl",function(){
+CodeMirror.defineMode("perl",() => {
         // http://perldoc.perl.org
         var PERL={                                      //   null - magic touch
                                                         //   1 - keyword
@@ -470,7 +470,7 @@ CodeMirror.defineMode("perl",function(){
                 state.chain=null;                               //                                                          12   3tail
                 state.style=null;
                 state.tail=null;
-                state.tokenize=function(stream,state){
+                state.tokenize=(stream, state) => {
                         var e=false,c,i=0;
                         while(c=stream.next()){
                                 if(c===chain[i]&&!e){
@@ -487,7 +487,7 @@ CodeMirror.defineMode("perl",function(){
                 return state.tokenize(stream,state);}
 
         function tokenSOMETHING(stream,state,string){
-                state.tokenize=function(stream,state){
+                state.tokenize=(stream, state) => {
                         if(stream.string==string)
                                 state.tokenize=tokenPerl;
                         stream.skipToEnd();
@@ -766,15 +766,14 @@ stream.eatSuffix(2);
                                 return "meta";}
                 return null;}
 
-        return{
-                startState:function(){
-                        return{
-                                tokenize:tokenPerl,
-                                chain:null,
-                                style:null,
-                                tail:null};},
-                token:function(stream,state){
-                        return (state.tokenize||tokenPerl)(stream,state);},
+        return {
+                startState:() => ({
+                        tokenize:tokenPerl,
+                        chain:null,
+                        style:null,
+                        tail:null
+                }),
+                token:(stream, state) => (state.tokenize||tokenPerl)(stream,state),
                 electricChars:"{}"};});
 
 CodeMirror.defineMIME("text/x-perl", "perl");

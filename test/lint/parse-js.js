@@ -369,7 +369,7 @@ function tokenizer($TEXT) {
 
         function read_num(prefix) {
                 var has_e = false, after_e = false, has_x = false, has_dot = prefix == ".";
-                var num = read_while(function(ch, i){
+                var num = read_while((ch, i) => {
                         if (ch == "x" || ch == "X") {
                                 if (has_x) return false;
                                 return has_x = true;
@@ -430,7 +430,7 @@ function tokenizer($TEXT) {
         };
 
         function read_string() {
-                return with_eof_error("Unterminated string constant", function(){
+                return with_eof_error("Unterminated string constant", () => {
                         var quote = next(), ret = "";
                         for (;;) {
                                 var ch = next(true);
@@ -438,7 +438,7 @@ function tokenizer($TEXT) {
                                         // read OctalEscapeSequence (XXX: deprecated if "strict mode")
                                         // https://github.com/mishoo/UglifyJS/issues/178
                                         var octal_len = 0, first = null;
-                                        ch = read_while(function(ch){
+                                        ch = read_while(ch => {
                                                 if (ch >= "0" && ch <= "7") {
                                                         if (!first) {
                                                                 first = ch;
@@ -474,7 +474,7 @@ function tokenizer($TEXT) {
 
         function read_multiline_comment() {
                 next();
-                return with_eof_error("Unterminated multiline comment", function(){
+                return with_eof_error("Unterminated multiline comment", () => {
                         var i = find("*/", true),
                             text = S.text.substring(S.pos, i);
                         S.pos = i + 2;
@@ -516,7 +516,7 @@ function tokenizer($TEXT) {
         };
 
         function read_regexp(regexp) {
-                return with_eof_error("Unterminated regular expression", function(){
+                return with_eof_error("Unterminated regular expression", () => {
                         var prev_backslash = false, ch, in_class = false;
                         while ((ch = next(true))) if (prev_backslash) {
                                 regexp += "\\" + ch;
@@ -613,7 +613,7 @@ function tokenizer($TEXT) {
                 parse_error("Unexpected character '" + ch + "'");
         };
 
-        next_token.context = function(nc) {
+        next_token.context = nc => {
                 if (nc) S = nc;
                 return S;
         };
@@ -638,19 +638,19 @@ var UNARY_PREFIX = array_to_hash([
 
 var UNARY_POSTFIX = array_to_hash([ "--", "++" ]);
 
-var ASSIGNMENT = (function(a, ret, i){
+var ASSIGNMENT = (((a, ret, i) => {
         while (i < a.length) {
                 ret[a[i]] = a[i].substr(0, a[i].length - 1);
                 i++;
         }
         return ret;
-})(
+}))(
         ["+=", "-=", "/=", "*=", "%=", ">>=", "<<=", ">>>=", "|=", "^=", "&="],
         { "=": true },
         0
 );
 
-var PRECEDENCE = (function(a, ret){
+var PRECEDENCE = (((a, ret) => {
         for (var i = 0, n = 1; i < a.length; ++i, ++n) {
                 var b = a[i];
                 for (var j = 0; j < b.length; ++j) {
@@ -658,7 +658,7 @@ var PRECEDENCE = (function(a, ret){
                 }
         }
         return ret;
-})(
+}))(
         [
                 ["||"],
                 ["&&"],
@@ -790,7 +790,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 else return parser;
         };
 
-        var statement = maybe_embed_tokens(function() {
+        var statement = maybe_embed_tokens(() => {
                 if (is("operator", "/") || is("operator", "/=")) {
                         S.peeked = null;
                         S.token = S.input(S.token.value.substr(1)); // force regexp
@@ -839,10 +839,10 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                                 return as("debugger");
 
                             case "do":
-                                return (function(body){
+                                return ((body => {
                                         expect_token("keyword", "while");
                                         return as("do", prog1(parenthesised, semicolon), body);
-                                })(in_loop(statement));
+                                }))(in_loop(statement));
 
                             case "for":
                                 return for_();
@@ -954,7 +954,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 return as("for-in", init, lhs, obj, in_loop(statement));
         };
 
-        var function_ = function(in_statement) {
+        var function_ = in_statement => {
                 var name = is("name") ? prog1(S.token.value, next) : null;
                 if (in_statement && !name)
                         unexpected();
@@ -962,7 +962,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 return as(in_statement ? "defun" : "function",
                           name,
                           // arguments
-                          (function(first, a){
+                          (((first, a) => {
                                   while (!is("punc", ")")) {
                                           if (first) first = false; else expect(",");
                                           if (!is("name")) unexpected();
@@ -971,9 +971,9 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                                   }
                                   next();
                                   return a;
-                          })(true, []),
+                          }))(true, []),
                           // body
-                          (function(){
+                          ((() => {
                                   ++S.in_function;
                                   var loop = S.in_loop;
                                   S.in_directives = true;
@@ -982,7 +982,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                                   --S.in_function;
                                   S.in_loop = loop;
                                   return a;
-                          })());
+                          }))());
         };
 
         function if_() {
@@ -1005,7 +1005,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 return a;
         };
 
-        var switch_block_ = curry(in_loop, function(){
+        var switch_block_ = curry(in_loop, () => {
                 expect("{");
                 var a = [], cur = null;
                 while (!is("punc", "}")) {
@@ -1091,7 +1091,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 return subscripts(as("new", newexp, args), true);
         };
 
-        var expr_atom = maybe_embed_tokens(function(allow_calls) {
+        var expr_atom = maybe_embed_tokens(allow_calls => {
                 if (is("operator", "new")) {
                         next();
                         return new_();
@@ -1295,11 +1295,11 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 }
         };
 
-        return as("toplevel", (function(a){
+        return as("toplevel", ((a => {
                 while (!is("eof"))
                         a.push(statement());
                 return a;
-        })([]));
+        }))([]));
 
 };
 
@@ -1344,7 +1344,7 @@ function HOP(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
 };
 
-var warn = function() {};
+var warn = () => {};
 
 /* -----[ Exports ]----- */
 
@@ -1363,7 +1363,7 @@ exports.OPERATORS = OPERATORS;
 exports.is_alphanumeric_char = is_alphanumeric_char;
 exports.is_identifier_start = is_identifier_start;
 exports.is_identifier_char = is_identifier_char;
-exports.set_logger = function(logger) {
+exports.set_logger = logger => {
         warn = logger;
 };
 

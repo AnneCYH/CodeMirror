@@ -14,7 +14,7 @@
  * =====================================================================================
  */
 
-CodeMirror.defineMode("asterisk", function() {
+CodeMirror.defineMode("asterisk", () => {
   var atoms    = ["exten", "same", "include","ignorepat","switch"],
       dpcmd    = ["#include","#exec"],
       apps     = [
@@ -110,17 +110,15 @@ CodeMirror.defineMode("asterisk", function() {
   }
 
   return {
-    startState: function() {
-      return {
-        extenStart: false,
-        extenSame:  false,
-        extenInclude: false,
-        extenExten: false,
-        extenPriority: false,
-        extenApplication: false
-      };
-    },
-    token: function(stream, state) {
+    startState: () => ({
+      extenStart: false,
+      extenSame:  false,
+      extenInclude: false,
+      extenExten: false,
+      extenPriority: false,
+      extenApplication: false
+    }),
+    token: (stream, state) => {
 
       var cur = '';
       var ch  = '';

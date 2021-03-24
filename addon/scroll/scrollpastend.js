@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  CodeMirror.defineOption("scrollPastEnd", false, function(cm, val, old) {
+  CodeMirror.defineOption("scrollPastEnd", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init) {
       cm.off("change", onChange);
       cm.display.lineSpace.parentNode.style.paddingBottom = "";

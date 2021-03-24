@@ -5,7 +5,7 @@
   GitHub: @peterkroon
 */
 
-CodeMirror.defineMode("less", function(config) {
+CodeMirror.defineMode("less", config => {
   var indentUnit = config.indentUnit, type;
   function ret(style, tp) {type = tp; return style;}
 
@@ -192,7 +192,7 @@ CodeMirror.defineMode("less", function(config) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped)
@@ -205,13 +205,13 @@ CodeMirror.defineMode("less", function(config) {
   }
 
   return {
-    startState: function(base) {
-      return {tokenize: tokenBase,
-              baseIndent: base || 0,
-              stack: []};
-    },
+    startState: base => ({
+      tokenize: tokenBase,
+      baseIndent: base || 0,
+      stack: []
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
 
@@ -239,7 +239,7 @@ CodeMirror.defineMode("less", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       var n = state.stack.length;
 
       if (/^\}/.test(textAfter))

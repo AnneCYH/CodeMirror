@@ -14,11 +14,11 @@
     CoreVersion parameter is needed for TiddlyWiki only!
 ***/
 //{{{
-CodeMirror.defineMode("tiddlywiki", function () {
+CodeMirror.defineMode("tiddlywiki", () => {
   // Tokenizer
   var textwords = {};
 
-  var keywords = function () {
+  var keywords = (() => {
     function kw(type) {
       return { type: type, style: "macro"};
     }
@@ -34,7 +34,7 @@ CodeMirror.defineMode("tiddlywiki", function () {
       "with": kw('with'),
       "filter": kw('filter')
     };
-  }();
+  })();
 
   var isSpaceName = /[\w_\-]/i,
   reHR = /^\-\-\-\-+$/,                                 // <hr>
@@ -331,15 +331,13 @@ CodeMirror.defineMode("tiddlywiki", function () {
 
   // Interface
   return {
-    startState: function () {
-      return {
-        tokenize: jsTokenBase,
-        indented: 0,
-        level: 0
-      };
-    },
+    startState: () => ({
+      tokenize: jsTokenBase,
+      indented: 0,
+      level: 0
+    }),
 
-    token: function (stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
       return style;

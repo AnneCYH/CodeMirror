@@ -4,7 +4,7 @@
  *      @link   https://github.com/prasanthj/pig-codemirror-2
  *  This implementation is adapted from PL/SQL mode in CodeMirror 2.
  */
-CodeMirror.defineMode("pig", function(_config, parserConfig) {
+CodeMirror.defineMode("pig", (_config, parserConfig) => {
   var keywords = parserConfig.keywords,
   builtins = parserConfig.builtins,
   types = parserConfig.types,
@@ -37,7 +37,7 @@ CodeMirror.defineMode("pig", function(_config, parserConfig) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, next, end = false;
       while((next = stream.next()) != null) {
         if (next == quote && !escaped) {
@@ -118,14 +118,12 @@ CodeMirror.defineMode("pig", function(_config, parserConfig) {
 
   // Interface
   return {
-    startState: function() {
-      return {
-        tokenize: tokenBase,
-        startOfLine: true
-      };
-    },
+    startState: () => ({
+      tokenize: tokenBase,
+      startOfLine: true
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if(stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
       return style;
@@ -133,7 +131,7 @@ CodeMirror.defineMode("pig", function(_config, parserConfig) {
   };
 });
 
-(function() {
+((() => {
   function keywords(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
@@ -168,4 +166,4 @@ CodeMirror.defineMode("pig", function(_config, parserConfig) {
     keywords: keywords(pKeywords),
     types: keywords(pTypes)
   });
-}());
+})());

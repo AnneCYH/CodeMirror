@@ -1,4 +1,4 @@
-CodeMirror.defineMode("r", function(config) {
+CodeMirror.defineMode("r", config => {
   function wordObj(str) {
     var words = str.split(" "), res = {};
     for (var i = 0; i < words.length; ++i) res[words[i]] = true;
@@ -62,7 +62,7 @@ CodeMirror.defineMode("r", function(config) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.eat("\\")) {
         var ch = stream.next();
         if (ch == "x") stream.match(/^[a-f0-9]{2}/i);
@@ -95,16 +95,18 @@ CodeMirror.defineMode("r", function(config) {
   }
 
   return {
-    startState: function() {
-      return {tokenize: tokenBase,
-              ctx: {type: "top",
-                    indent: -config.indentUnit,
-                    align: false},
-              indent: 0,
-              afterIdent: false};
-    },
+    startState: () => ({
+      tokenize: tokenBase,
 
-    token: function(stream, state) {
+      ctx: {type: "top",
+            indent: -config.indentUnit,
+            align: false},
+
+      indent: 0,
+      afterIdent: false
+    }),
+
+    token: (stream, state) => {
       if (stream.sol()) {
         if (state.ctx.align == null) state.ctx.align = false;
         state.indent = stream.indentation();
@@ -127,7 +129,7 @@ CodeMirror.defineMode("r", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.tokenize != tokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0), ctx = state.ctx,
           closing = firstChar == ctx.type;

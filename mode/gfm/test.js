@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4}, "gfm");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -109,4 +109,4 @@
      "[comment `foo]",
      "",
      "[link http://www.example.com/]");
-})();
+}))();

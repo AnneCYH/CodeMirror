@@ -1,4 +1,4 @@
-CodeMirror.defineMode("nginx", function(config) {
+CodeMirror.defineMode("nginx", config => {
 
   function words(str) {
     var obj = {}, words = str.split(" ");
@@ -106,7 +106,7 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped)
@@ -119,13 +119,13 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   return {
-    startState: function(base) {
-      return {tokenize: tokenBase,
-              baseIndent: base || 0,
-              stack: []};
-    },
+    startState: base => ({
+      tokenize: tokenBase,
+      baseIndent: base || 0,
+      stack: []
+    }),
 
-    token: function(stream, state) {
+    token: (stream, state) => {
       if (stream.eatSpace()) return null;
       type = null;
       var style = state.tokenize(stream, state);
@@ -149,7 +149,7 @@ CodeMirror.defineMode("nginx", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       var n = state.stack.length;
       if (/^\}/.test(textAfter))
         n -= state.stack[state.stack.length-1] == "rule" ? 2 : 1;

@@ -26,7 +26,7 @@
     if (!tt.parentNode) return;
     if (tt.style.opacity == null) rm(tt);
     tt.style.opacity = 0;
-    setTimeout(function() { rm(tt); }, 600);
+    setTimeout(() => { rm(tt); }, 600);
   }
 
   function showTooltipFor(e, content, node) {
@@ -35,7 +35,7 @@
       CodeMirror.off(node, "mouseout", hide);
       if (tooltip) { hideTooltip(tooltip); tooltip = null; }
     }
-    var poll = setInterval(function() {
+    var poll = setInterval(() => {
       if (tooltip) for (var n = node;; n = n.parentNode) {
         if (n == document.body) return;
         if (!n) { hide(); break; }
@@ -50,7 +50,7 @@
     this.options = options;
     this.timeout = null;
     this.hasGutter = hasGutter;
-    this.onMouseOver = function(e) { onMouseOver(cm, e); };
+    this.onMouseOver = e => { onMouseOver(cm, e); };
   }
 
   function parseOptions(cm, options) {
@@ -77,7 +77,7 @@
       inner.className = "CodeMirror-lint-marker-multiple";
     }
 
-    if (tooltips != false) CodeMirror.on(inner, "mouseover", function(e) {
+    if (tooltips != false) CodeMirror.on(inner, "mouseover", e => {
       showTooltipFor(e, labels, inner);
     });
 
@@ -153,7 +153,7 @@
   function onChange(cm) {
     var state = cm.state.lint;
     clearTimeout(state.timeout);
-    state.timeout = setTimeout(function(){startLinting(cm);}, state.options.delay || 500);
+    state.timeout = setTimeout(() => {startLinting(cm);}, state.options.delay || 500);
   }
 
   function popupSpanTooltip(ann, e) {

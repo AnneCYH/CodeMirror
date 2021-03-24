@@ -1,4 +1,4 @@
-(function() {
+((() => {
 
   var bogus = [ "Dangerous comment" ];
 
@@ -80,8 +80,7 @@
             tabpositions = [];
             // ugggh phantomjs does not like this
             // forEachChar(evidence, function(item, index) {
-            Array.prototype.forEach.call(evidence, function(item,
-                                                            index) {
+            Array.prototype.forEach.call(evidence, (item, index) => {
               if (item === '\t') {
                 // First col is 1 (not 0) to match error
                 // positions
@@ -92,7 +91,7 @@
           }
           if (tabpositions.length > 0) {
             var pos = error.character;
-            tabpositions.forEach(function(tabposition) {
+            tabpositions.forEach(tabposition => {
               if (pos > tabposition) pos -= 1;
             });
             error.character = pos;
@@ -121,4 +120,4 @@
       }
     }
   }
-})();
+}))();

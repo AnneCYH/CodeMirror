@@ -1,4 +1,4 @@
-(function() {
+((() => {
   var ie_lt8 = /MSIE \d/.test(navigator.userAgent) &&
     (document.documentMode == null || document.documentMode < 8);
 
@@ -55,8 +55,8 @@
     // Kludge to work around the IE bug from issue #1193, where text
     // input stops going to the textare whever this fires.
     if (ie_lt8 && cm.state.focused) cm.display.input.focus();
-    var clear = function() {
-      cm.operation(function() { one.clear(); two && two.clear(); });
+    var clear = () => {
+      cm.operation(() => { one.clear(); two && two.clear(); });
     };
     if (autoclear) setTimeout(clear, 800);
     else return clear;
@@ -64,13 +64,13 @@
 
   var currentlyHighlighted = null;
   function doMatchBrackets(cm) {
-    cm.operation(function() {
+    cm.operation(() => {
       if (currentlyHighlighted) {currentlyHighlighted(); currentlyHighlighted = null;}
       if (!cm.somethingSelected()) currentlyHighlighted = matchBrackets(cm, false);
     });
   }
 
-  CodeMirror.defineOption("matchBrackets", false, function(cm, val, old) {
+  CodeMirror.defineOption("matchBrackets", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init)
       cm.off("cursorActivity", doMatchBrackets);
     if (val) {
@@ -83,4 +83,4 @@
   CodeMirror.defineExtension("findMatchingBracket", function(pos, strict){
     return findMatchingBracket(this, pos, strict);
   });
-})();
+}))();

@@ -1,4 +1,4 @@
-CodeMirror.registerHelper("fold", "indent", function(cm, start) {
+CodeMirror.registerHelper("fold", "indent", (cm, start) => {
   var tabSize = cm.getOption("tabSize"), firstLine = cm.getLine(start.line);
   var myIndent = CodeMirror.countColumn(firstLine, null, tabSize);
   for (var i = start.line + 1, end = cm.lineCount(); i < end; ++i) {

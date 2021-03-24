@@ -1,4 +1,4 @@
-CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
+CodeMirror.defineMode("htmlembedded", (config, parserConfig) => {
 
   //config settings
   var scriptStartRegex = parserConfig.scriptStartRegex || /^<%/i,
@@ -29,7 +29,7 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
 
 
   return {
-    startState: function() {
+    startState: () => {
       scriptingMode = scriptingMode || CodeMirror.getMode(config, parserConfig.scriptingModeSpec);
       htmlMixedMode = htmlMixedMode || CodeMirror.getMode(config, "htmlmixed");
       return {
@@ -39,28 +39,24 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
       };
     },
 
-    token: function(stream, state) {
-      return state.token(stream, state);
-    },
+    token: (stream, state) => state.token(stream, state),
 
-    indent: function(state, textAfter) {
+    indent: (state, textAfter) => {
       if (state.token == htmlDispatch)
         return htmlMixedMode.indent(state.htmlState, textAfter);
       else if (scriptingMode.indent)
         return scriptingMode.indent(state.scriptState, textAfter);
     },
 
-    copyState: function(state) {
-      return {
-       token : state.token,
-       htmlState : CodeMirror.copyState(htmlMixedMode, state.htmlState),
-       scriptState : CodeMirror.copyState(scriptingMode, state.scriptState)
-      };
-    },
+    copyState: state => ({
+      token : state.token,
+      htmlState : CodeMirror.copyState(htmlMixedMode, state.htmlState),
+      scriptState : CodeMirror.copyState(scriptingMode, state.scriptState)
+    }),
 
     electricChars: "/{}:",
 
-    innerMode: function(state) {
+    innerMode: state => {
       if (state.token == scriptingDispatch) return {state: state.scriptState, mode: scriptingMode};
       else return {state: state.htmlState, mode: htmlMixedMode};
     }
